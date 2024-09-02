@@ -1,5 +1,5 @@
 from NVQuyen import ThoiGianTrongNgay_NhomSQ
-from NVSiQuan import LaySQTuMa
+# from NVSiQuan import LaySQTuMa
 from model import LSRaVaoSQModel,CongGacModel,TheSiQuanModel
 from django.utils import timezone
 from datetime import timedelta
