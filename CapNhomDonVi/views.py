@@ -58,5 +58,14 @@ def ThongTin(request,id):
     
 
 
+@api_view(['GET'])
+def ThemCapTrenCNDV(request,id):
+    result = NVCapNhomDonVi.CapTrenThemCNDV(id)
+    if result["status"] == "success":
+        return Response(result, status=status.HTTP_200_OK)
+    else:
+        return Response(result, status=status.HTTP_400_BAD_REQUEST)
+
+
     
 

@@ -9,4 +9,5 @@ urlpatterns = [
     path('xoa/<int:id>',views.Xoa,name="XoaCapNhomDonVi"),
     path('<int:id>',views.TimKiemTheoNhom,name="TimKiemTheoNhom"),
     path('thongtin/<int:id>',views.ThongTin,name="ThongTinCapNhomDonVi"),
+    path('ThemCapTrenCNDV/<int:id>',views.ThemCapTrenCNDV,name="ThemCapTrenCNDV"),
 ]

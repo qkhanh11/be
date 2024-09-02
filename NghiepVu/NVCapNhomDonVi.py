@@ -113,6 +113,19 @@ def ThongTinChiTiet(id):
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
+    
 
 
+def CapTrenThemCNDV(id_nhom):
+    try:
+        # Tìm các đối tượng CapNhomDonVi liên quan đến id_nhom
+        cap_list = CapNhomDonViModel.CapNhomDonViModel.objects.filter(id_NhomDonVi_id=id_nhom)
 
+        # Chuyển đổi dữ liệu thành dạng có thể trả về
+        data = [{"id": "", "Ten": "Không có đơn vị cấp trên"}]  # Thêm dòng mặc định
+        data += list(cap_list.values("id", "Ten"))
+
+        return {"status": "success", "data": data}
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
