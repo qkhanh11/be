@@ -53,6 +53,10 @@ def LayDanhSachCong():
 
 def ThemTrucBan(ngay,TBTruong,TBPho):
     try:
+        if isinstance(ngay, str):
+            ngay = date.fromisoformat(ngay) 
+        if date.today() > ngay:
+            return {"status": "error", "message": "Không thể thêm trực ban vào quá khứ"}
         banghi= PCTrucBanModel.PCTrucBanModel.objects.filter(Ngay=ngay).exists()
         if banghi:
             return {"status": "error", "message": "Đã có danh sách trực ban ngày này"}
@@ -77,6 +81,10 @@ def ThemTrucBan(ngay,TBTruong,TBPho):
 
 def SuaTrucBan(id, ngay,TBTruong,TBPho):
     try:
+        if isinstance(ngay, str):
+            ngay = date.fromisoformat(ngay) 
+        if date.today() > ngay:
+            return {"status": "error", "message": "Không thể sửa trực ban vào quá khứ"}
         SQ1 = LaySQTuMa(TBTruong)
         if not SQ1:
             return {"status": "error", "message": "Không tồn tại mã quân nhân của trực ban trưởng"}
@@ -92,6 +100,15 @@ def SuaTrucBan(id, ngay,TBTruong,TBPho):
         pctrucban.TBTruong=SQ1
         pctrucban.TBPho=SQ2
         pctrucban.save()
+        return {"status": "success", "data": 'Thành công'}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
+
+def XoaTrucBan(id):
+    try:
+        pctrucban = PCTrucBanModel.PCTrucBanModel.objects.get(pk=id)
+        pctrucban.delete()
         return {"status": "success", "data": 'Thành công'}
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -123,6 +140,8 @@ def XoaCaGac(id):
 
 def ThemPCCaGac(Ngay,CongGac):
     try:
+        if isinstance(ngay, str):
+            ngay = date.fromisoformat(ngay)
         if date.today() > Ngay:
             return {"status": "error", "message": "Không thể phân công gác cho quá khứ"}
         
@@ -148,6 +167,8 @@ def ThemPCCaGac(Ngay,CongGac):
 
 def XoaPCCaGac(Ngay,CongGac):
     try:
+        if isinstance(ngay, str):
+            ngay = date.fromisoformat(ngay)
         if date.today() > Ngay:
             return {"status": "error", "message": "Không thể xóa lịch sử gác"}
         
@@ -287,6 +308,50 @@ def xoa_phan_cong_chi_tiet(id):
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
+    
+
+def XemTatCaTrucBan():
+    try:
+        # Lấy tất cả các bản ghi từ PCTrucBanModel và sắp xếp theo ngày giảm dần
+        truc_ban_list = (
+            PCTrucBanModel.PCTrucBanModel.objects.all()
+            .order_by('-Ngay')  # Sắp xếp theo ngày giảm dần
+            .values('id', 'Ngay')  # Lấy id và ngày của các bản ghi
+        )
+        
+        # Chuyển đổi QuerySet thành danh sách
+        truc_ban_list = list(truc_ban_list)
+
+        return {"status": "success", "data": truc_ban_list}
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
+
+
+def XemChiTietTrucBan(id):
+    try:
+        # Tìm bản ghi theo id
+        truc_ban = PCTrucBanModel.PCTrucBanModel.objects.get(id=id)
+        
+        # Chuyển đổi bản ghi thành dictionary
+        truc_ban_data = {
+            "id": truc_ban.id,
+            "Ngay": truc_ban.Ngay,
+            "TBTruong": truc_ban.TBTruong.id if truc_ban.TBTruong else None,
+            "TBPho": truc_ban.TBPho.id if truc_ban.TBPho else None,
+            "TBTruong_HoTen": truc_ban.TBTruong.HoTen if truc_ban.TBTruong else None,
+            "TBPho_HoTen": truc_ban.TBPho.HoTen if truc_ban.TBPho else None,
+        }
+        
+        return {"status": "success", "data": truc_ban_data}
+
+    except PCTrucBanModel.PCTrucBanModel.DoesNotExist:
+        return {"status": "error", "message": "Bản ghi không tồn tại."}
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
     
 
 

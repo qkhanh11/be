@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'TheRaVao',
     'Khach',
     'HocVien',
+    'Truc',
 ]
 
 MIDDLEWARE = [
