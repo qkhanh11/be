@@ -66,6 +66,9 @@ def ThemSiQuan(HoTen, NgaySinh, MaQuanNhan, DonVi_id, ChucVu_id, CapBac_id, Nhom
         ChucVu = CVSiQuanModel.CVSiQuanModel.objects.get(pk=ChucVu_id)
         CapBac = CapBacModel.CapBacModel.objects.get(pk=CapBac_id)
         NhomSQ = NhomSQModel.NhomSQModel.objects.get(pk=NhomSQ_id)
+        if SiQuanModel.SiQuanModel.objects.filter(MaQuanNhan=MaQuanNhan).exists():
+            return {"status": "error", "message": "Mã quân nhân đã tồn tại"}
+
 
         # Tạo đối tượng SiQuanModel mới
         si_quan = SiQuanModel.SiQuanModel(
@@ -105,6 +108,8 @@ def SuaSiQuan(id, HoTen, NgaySinh, MaQuanNhan, DonVi_id, ChucVu_id, CapBac_id, N
         CapBac = CapBacModel.CapBacModel.objects.get(pk=CapBac_id)
         NhomSQ = NhomSQModel.NhomSQModel.objects.get(pk=NhomSQ_id)
 
+        if SiQuanModel.SiQuanModel.objects.exclude(pk=id).filter(MaQuanNhan=MaQuanNhan).exists():
+            return {"status": "error", "message": "Mã quân nhân đã tồn tại"}
         # Lấy đối tượng SiQuanModel hiện tại
         si_quan = SiQuanModel.SiQuanModel.objects.get(pk=id)
 
