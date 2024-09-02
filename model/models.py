@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-from .CaGacVBModel import CaBacVCModel
+from .CaGacVBModel import CaGacVBModel
 from .CapBacModel import CapBacModel
 from .CapNhomDonViModel import CapNhomDonViModel
 from .CBHaSiQuanModel import CBHaSiQuanModel

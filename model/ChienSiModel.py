@@ -7,6 +7,7 @@ from .CBHaSiQuanModel import CBHaSiQuanModel
 
 class ChienSiModel(models.Model):
     HoTen = models.CharField(max_length=50)
+    Ma = models.CharField(max_length=20)
     NgaySinh = models.DateField()
     DonVi = models.ForeignKey(DonViModel,on_delete=models.PROTECT)
     CapBac = models.ForeignKey(CBHaSiQuanModel,on_delete=models.PROTECT)

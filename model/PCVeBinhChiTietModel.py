@@ -4,6 +4,6 @@ from .ChienSiModel import ChienSiModel
 
 
 class PCVeBinhChiTietModel(models.Model):
-    PCVB = models.ForeignKey(PCVeBinhModel, on_delete=models.PROTECT)
-    ChienSi = models.ForeignKey(ChienSiModel, on_delete=models.PROTECT)
+    PCVB = models.ForeignKey(PCVeBinhModel, on_delete=models.CASCADE)
+    ChienSi = models.ForeignKey(ChienSiModel, on_delete=models.CASCADE)
 
