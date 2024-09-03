@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'Khach',
     'HocVien',
     'Truc',
+    'ChienSi',
+    'RaVaoSQ',
 ]
 
 MIDDLEWARE = [

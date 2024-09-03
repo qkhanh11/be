@@ -160,7 +160,7 @@ def ThongTinDonVi(id):
 
         return {"status": "success", "data": data}
 
-    except DonViModel.DoesNotExist:
+    except DonViModel.DonViModel.DoesNotExist:
         return {"status": "error", "message": "Không tìm thấy đơn vị với id này"}
     
     except Exception as e:
@@ -179,7 +179,7 @@ def DropDownDV(id_CapDonVi):
         # Trả về dữ liệu với status success
         return {"status": "success", "data": list(don_vi_list)}
 
-    except DonViModel.DoesNotExist:
+    except DonViModel.DonViModel.DoesNotExist:
         return {"status": "error", "message": "Không tìm thấy đơn vị với id này"}
     
     except Exception as e:
@@ -242,3 +242,26 @@ def TimDonVi(Nhom, TimKiem=None):
         "status": "success",
         "data": results
     }
+
+
+def DropdownDonViCha(id_capdonvi):
+    try:
+        # Tìm cấp nhóm đơn vị con dựa trên id_capdonvi
+        cap_don_vi_con = CapNhomDonViModel.CapNhomDonViModel.objects.get(id=id_capdonvi)
+
+        # Tìm cấp nhóm đơn vị cha của cấp nhóm đơn vị con
+        cap_don_vi_cha = cap_don_vi_con.CapTren
+
+        # Tìm các đơn vị có cấp nhóm đơn vị bằng với cấp nhóm đơn vị cha
+        don_vi_cha = DonViModel.DonViModel.objects.filter(CapNhomDonVi=cap_don_vi_cha).values('id', 'TenDonVi')
+
+        # Trả về danh sách id và tên của các đơn vị cha
+        return {
+            "status": "success",
+            "data": list(don_vi_cha)
+        }
+
+    except CapNhomDonViModel.CapNhomDonViModel.DoesNotExist:
+        return {"status": "error", "message": "Không tìm thấy cấp nhóm đơn vị với id đã cho."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}

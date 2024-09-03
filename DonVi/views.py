@@ -13,10 +13,12 @@ def Them(request):
     id_DonViCapTren = request.data.get('id_DonViCapTren')
     SoDienThoai = request.data.get('SoDienThoai')
     CapNhomDonVi = request.data.get('CapNhomDonVi')
+    print(TenDonVi, DiaDiem, MaDonVi, id_DonViCapTren, SoDienThoai, CapNhomDonVi)
     result = NVDonVi.ThemDonVi(TenDonVi, DiaDiem, MaDonVi, id_DonViCapTren, SoDienThoai, CapNhomDonVi)
     if result["status"] == "success":
         return Response(data=result,status=status.HTTP_200_OK)
     else:
+        print(result)
         return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
     
 
@@ -104,6 +106,15 @@ def TimDonVi(request):
     print(Nhom)
     TimKiem = request.query_params.get('TimKiem')
     result = NVDonVi.TimDonVi(Nhom, TimKiem)
+    if result["status"] == "success":
+        return Response(result, status=status.HTTP_200_OK)
+    else:
+        return Response(result, status=status.HTTP_404_NOT_FOUND)
+    
+
+@api_view(['GET'])
+def DropdownDonViCha(request,id):
+    result = NVDonVi.DropdownDonViCha(id)
     if result["status"] == "success":
         return Response(result, status=status.HTTP_200_OK)
     else:

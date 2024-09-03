@@ -13,4 +13,5 @@ urlpatterns = [
     path('DonViCon/',views.DonViCon,name="DonViCon"),
     path('DonViChaTheoNhom/',views.DonViChaTheoNhom,name="DonViChaTheoNhom"),
     path('TimDonVi/',views.TimDonVi,name="TimDonVi"),
+    path('DropdownDonViCha/<int:id>',views.DropdownDonViCha,name="DropdownDonViCha"),
 ]

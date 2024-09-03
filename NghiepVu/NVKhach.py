@@ -2,6 +2,7 @@ from model import LoaiKhachModel, KhachModel, TheKhachModel,KhachSiQuanModel
 from .NVSiQuan import LaySQTuMa
 from django.utils import timezone
 from datetime import timedelta
+from django.core.paginator import Paginator
 
 
 def kiem_tra_the_co_hieu_luc(sothe):
@@ -191,3 +192,23 @@ def DanhSachTiepKhachSiQuan():
     except Exception as e:
         # Xử lý lỗi khác nếu có
         return {"status": "error", "message": str(e)}
+    
+
+def danh_sach_the_khach(page=1):
+    # Lấy tất cả các thẻ khách
+    danh_sach_the = TheKhachModel.TheKhachModel.objects.all()
+    
+    # Phân trang
+    paginator = Paginator(danh_sach_the, 50)  # Số lượng thẻ trên mỗi trang  # Số trang hiện tại, mặc định là 1
+    page_obj = paginator.get_page(page)
+    
+    # Chuẩn bị dữ liệu để trả về dưới dạng JSON
+    data = {
+        'the_khach': list(page_obj.object_list.values()),
+        'page_number': page_obj.number,
+        'num_pages': paginator.num_pages,
+        'has_next': page_obj.has_next(),
+        'has_previous': page_obj.has_previous(),
+    }
+    
+    return {"status": "success", "data": data}

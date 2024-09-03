@@ -29,4 +29,6 @@ urlpatterns = [
     path('api/Khach/',include('Khach.urls')),
     path('api/HocVien/',include('HocVien.urls')),
     path('api/Truc/',include('Truc.urls')),
+    path('api/ChienSi/',include('ChienSi.urls')),
+    path('api/RaVaoSQ/',include('RaVaoSQ.urls')),
 ]

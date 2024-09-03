@@ -1,4 +1,4 @@
-from model import TheSiQuanModel,TheQNCNModel,TheSiQuanNamModel,TheQNCNNamModel,TheVienChucModel,TheVienChucNamModel, SiQuanModel,QNCNModel,VienChucQPModel
+from model import TheSiQuanModel,TheQNCNModel,TheSiQuanNamModel,TheQNCNNamModel,TheVienChucModel,TheVienChucNamModel, SiQuanModel,QNCNModel,VienChucQPModel,NhomSQModel
 
 
 def ThemTheSQ(SoThe, SiQuan):
@@ -216,13 +216,13 @@ def The_NhomSQ(sothe):
         # Kiểm tra xem thẻ có tồn tại không
         if not the:
             return {"status": "error", "message": "Không tìm thấy thẻ với số thẻ này."}
-
+ 
         # Lấy thông tin sĩ quan liên kết với thẻ
         si_quan = the.SiQuan
 
         # Lấy thông tin NhomSQ của sĩ quan
-        nhom_sq = si_quan.NhomSQ
-        return nhom_sq
+        nhom_sq = NhomSQModel.NhomSQModel.objects.get(pk=si_quan.NhomSQ.id)
+        return int(nhom_sq.id)
 
     except AttributeError:
         return {"status": "error", "message": "Không tìm thấy thông tin nhóm sĩ quan."}

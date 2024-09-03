@@ -56,5 +56,14 @@ def XemChiTietTrucBan(request,id):
         return Response(data=result,status=status.HTTP_200_OK)
     else:
         return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
 
+
+@api_view(['GET'])
+def LayDanhSachCong(request):
+    result = NVTruc.LayDanhSachCong()
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
 

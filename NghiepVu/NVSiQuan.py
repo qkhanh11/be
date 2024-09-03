@@ -322,3 +322,11 @@ def LaySQTuMa(MaSQ):
     except Exception as e:
         print(f"Lỗi khác: {str(e)}")
         return None
+    
+
+def LayTenSQTuMa(MaSQ):
+    try:
+        si_quan = SiQuanModel.SiQuanModel.objects.get(MaQuanNhan=MaSQ)
+        return {"status": "success", "HoTen": si_quan.HoTen}
+    except:
+        return {"status": "success", "HoTen": ""}

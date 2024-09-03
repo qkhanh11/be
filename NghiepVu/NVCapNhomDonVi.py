@@ -59,7 +59,42 @@ def TimKiemTheoNhom(id_nhom):
         cap_list = CapNhomDonViModel.CapNhomDonViModel.objects.filter(id_NhomDonVi_id=id_nhom)
 
         # Chuyển đổi dữ liệu thành dạng có thể trả về
-        data = list(cap_list.values("id", "Ten", "CapTren__Ten"))
+        data = []
+        for cap in cap_list:
+            ten_cap = cap.Ten
+            cap_tren_ten = cap.CapTren.Ten if cap.CapTren else ""
+            ten = f"{ten_cap} ({cap_tren_ten})"
+            data.append({
+                "id": cap.id,
+                "Ten": ten,
+                "CapTren__Ten": cap_tren_ten
+            })
+        # for cap in cap_list:
+        #     ten = cap.Ten + ' ('+ cap.CapTren + ') '
+        #     data.append({
+        #         "id": cap.id,
+        #         "Ten": ten,
+        #         "CapTrenTen": cap.CapTren.Ten if cap.CapTren else None
+        #     })
+        # data = list(cap_list.values("id", "Ten", "CapTren__Ten"))
+
+        return {"status": "success", "data": data}
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+    try:
+        # Tìm các đối tượng CapNhomDonVi liên quan đến id_nhom
+        cap_list = CapNhomDonViModel.CapNhomDonViModel.objects.filter(id_NhomDonVi_id=id_nhom)
+
+        # Chuyển đổi dữ liệu thành dạng có thể trả về
+        data = []
+        for cap in cap_list:
+            data.append({
+                "id": cap.id,
+                "Ten": cap.Ten,
+                "CapTrenTen": cap.CapTren.Ten if cap.CapTren else None
+            })
 
         return {"status": "success", "data": data}
 
@@ -123,9 +158,19 @@ def CapTrenThemCNDV(id_nhom):
 
         # Chuyển đổi dữ liệu thành dạng có thể trả về
         data = [{"id": "", "Ten": "Không có đơn vị cấp trên"}]  # Thêm dòng mặc định
-        data += list(cap_list.values("id", "Ten"))
+        data = []
+        for cap in cap_list:
+            ten_cap = cap.Ten
+            cap_tren_ten = cap.CapTren.Ten if cap.CapTren else ""
+            ten = f"{ten_cap} ({cap_tren_ten})"
+            data.append({
+                "id": cap.id,
+                "Ten": ten
+            })
 
         return {"status": "success", "data": data}
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
+    
+

@@ -1,4 +1,4 @@
-from NVQuyen import ThoiGianTrongNgay_NhomSQ
+from .NVQuyen import ThoiGianTrongNgay_NhomSQ
 # from NVSiQuan import LaySQTuMa
 from model import LSRaVaoSQModel,CongGacModel,TheSiQuanModel
 from django.utils import timezone
@@ -10,15 +10,34 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def RaVaoSQ(sothe,trangthai,cong):
     tg_ra_va_tg_vao = ThoiGianTrongNgay_NhomSQ(sothe)
-    if tg_ra_va_tg_vao['status'] == 'error':
-            return tg_ra_va_tg_vao
+    try:
+        if tg_ra_va_tg_vao['status'] == 'error':
+            return tg_ra_va_tg_vao  # Trả về thông báo lỗi nếu không tìm thấy nhóm sĩ quan
+    except: 
+        pass
     thoigian = timezone.now() + timedelta(hours=7)
     thoigian_gio = thoigian.time()
-    for tg_ra, tg_vao in tg_ra_va_tg_vao:
+    for tg_vao, tg_ra in tg_ra_va_tg_vao:
+           print(tg_ra,tg_vao)
            if thoigian_gio > tg_vao and thoigian_gio < tg_ra:
+                
                 if trangthai == 0:
+                    ls_ravao = LSRaVaoSQModel.LSRaVaoSQModel.objects.create(
+                    SiQuan = SQ,
+                    SoThe = the,
+                    ThoiGian = thoigian,
+                    TrangThai = trangthai,
+                    Cong = Cong
+    )
                     return {"status": "error", "message": "Vào muộn"}
                 else:
+                    ls_ravao = LSRaVaoSQModel.LSRaVaoSQModel.objects.create(
+                    SiQuan = SQ,
+                    SoThe = the,
+                    ThoiGian = thoigian,
+                    TrangThai = trangthai,
+                    Cong = Cong
+                )
                     return {"status": "error", "message": "Ra trước thời gian quy định"}
     the = TheSiQuanModel.TheSiQuanModel.objects.get(SoThe=sothe, TrangThai= True)
     SQ = the.SiQuan

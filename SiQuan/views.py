@@ -92,6 +92,15 @@ def ThongTinChiTiet(request,id):
     else:
         return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+@api_view(['GET'])
+def LayTenSQTuMa(request,id):
+    result = NVSiQuan.LayTenSQTuMa(id)
+    if result["status"] == "success":
+        return Response(result, status=status.HTTP_200_OK)
+    else:
+        return Response(result, status=status.HTTP_400_BAD_REQUEST)
     
 
 
