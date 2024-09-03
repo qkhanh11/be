@@ -97,6 +97,7 @@ def ThemSiQuan(HoTen, NgaySinh, MaQuanNhan, DonVi_id, ChucVu_id, CapBac_id, Nhom
 
     except Exception as e:
         # Trả về thông báo lỗi nếu có lỗi xảy ra
+        print(str(e))
         return {"status": "error", "message": str(e)}
     
 
@@ -156,7 +157,8 @@ def XoaSiQuan(id):
         SQ = SiQuanModel.SiQuanModel.objects.get(pk=id)
         
         # Xóa đối tượng khỏi cơ sở dữ liệu
-        SQ.delete()
+        SQ.TrangThai=False
+        SQ.save()
 
         return {"status": "success", "message": "Xóa thành công."}
     
@@ -167,7 +169,7 @@ def XoaSiQuan(id):
 def TimSiQuan(TimKiem, TenDV, trang=1):
     try:
         # Xử lý tìm kiếm theo tên, mã quân nhân, và tên đơn vị
-        si_quan_queryset = SiQuanModel.SiQuanModel.objects.all()
+        si_quan_queryset = SiQuanModel.SiQuanModel.objects.filter(TrangThai=True)
 
         # Tìm kiếm theo tên đơn vị nếu có
         if TenDV:
@@ -213,7 +215,7 @@ def TimSiQuan(TimKiem, TenDV, trang=1):
 def SiQuanTrongDonVi(id_DonVi,trang=1):
     try:
         # Lấy tất cả các sĩ quan thuộc đơn vị với id_DonVi
-        si_quan_queryset = SiQuanModel.SiQuanModel.objects.filter(DonVi_id=id_DonVi)
+        si_quan_queryset = SiQuanModel.SiQuanModel.objects.filter(DonVi_id=id_DonVi,TrangThai=True)
 
         # Phân trang
         paginator = Paginator(si_quan_queryset, SoDoiTuongMoiTrang)  # Tạo đối tượng Paginator
@@ -312,7 +314,7 @@ def ThongTinChiTiet(id):
 
 def LaySQTuMa(MaSQ):
     try:
-        si_quan = SiQuanModel.SiQuanModel.objects.get(MaQuanNhan=MaSQ)
+        si_quan = SiQuanModel.SiQuanModel.objects.get(MaQuanNhan=MaSQ,TrangThai=True)
         return si_quan
     except SiQuanModel.SiQuanModel.DoesNotExist:
         print(f"Không tìm thấy mã quân nhân: {MaSQ}")
@@ -327,7 +329,7 @@ def LaySQTuMa(MaSQ):
 
 def LayTenSQTuMa(MaSQ):
     try:
-        si_quan = SiQuanModel.SiQuanModel.objects.get(MaQuanNhan=MaSQ)
+        si_quan = SiQuanModel.SiQuanModel.objects.get(MaQuanNhan=MaSQ,TrangThai=True)
         return {"status": "success", "HoTen": si_quan.HoTen}
     except:
         return {"status": "success", "HoTen": ""}

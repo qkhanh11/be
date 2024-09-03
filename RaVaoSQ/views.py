@@ -27,3 +27,12 @@ def RaVaoSQDacBiet(request):
         return Response(data=result,status=status.HTTP_200_OK)
     else:
         return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['GET'])
+def lay_lich_su_ra_vao(request):
+    result = NVRaVaoSQ.lay_lich_su_ra_vao()
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)

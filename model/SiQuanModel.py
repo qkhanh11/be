@@ -18,4 +18,5 @@ class SiQuanModel(models.Model):
     SoCanCuoc = models.CharField(max_length=20)
     QueQuan = models.CharField(max_length=60)
     NoiO = models.CharField(max_length=60)
+    TrangThai = models.BooleanField(default=True)
 

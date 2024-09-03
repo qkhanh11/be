@@ -69,11 +69,12 @@ def RaVaoSQDacBiet(sothe,trangthai,cong):
 
 
 
-def lay_lich_su_ra_vao(page=1):
+def lay_lich_su_ra_vao():
     # Lấy tất cả bản ghi từ LSRaVaoSQModel
     ls_ra_vao_list = LSRaVaoSQModel.LSRaVaoSQModel.objects.select_related('SiQuan', 'SoThe', 'Cong').values(
         'SiQuan__HoTen', 
-        'SiQuan__DonVi__TenDonVi', 
+        'SiQuan__DonVi__TenDonVi',
+        'SiQuan__NhomSQ__TenNhom',
         'Cong__TenCong', 
         'ThoiGian', 
         'TrangThai'
@@ -83,42 +84,19 @@ def lay_lich_su_ra_vao(page=1):
         # Nếu không có bản ghi nào, trả về thông báo và danh sách trống
         return {
             "status": "success",
-            "data": [],
-            "pagination": {
-                "current_page": page,
-                "total_pages": 0,
-                "total_items": 0,
-                "has_next": False,
-                "has_previous": False,
-            }
+            "data": []
         }
     
-    # Tạo Paginator object
-    paginator = Paginator(ls_ra_vao_list, SoDoiTuongMoiTrang)
-    
-    try:
-        results = paginator.page(page)
-    except PageNotAnInteger:
-        results = paginator.page(1)
-    except EmptyPage:
-        results = paginator.page(paginator.num_pages)
 
     # Định dạng kết quả để chuyển đổi thành JSON
-    ket_qua = list(results)
+    ket_qua = list(ls_ra_vao_list)
     for item in ket_qua:
-        item['TrangThai'] = 'Ra' if item['TrangThai'] else 'Vao'
+        item['TrangThai'] = 'Ra' if item['TrangThai'] else 'Vào'
 
     # Trả về kết quả dạng JSON
     return {
         "status": "success",
-        "data": ket_qua,
-        "pagination": {
-            "current_page": results.number,
-            "total_pages": paginator.num_pages,
-            "total_items": paginator.count,
-            "has_next": results.has_next(),
-            "has_previous": results.has_previous(),
-        }
+        "data": ket_qua
     }
 
                      

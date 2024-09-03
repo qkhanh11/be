@@ -19,6 +19,7 @@ def ThemSiQuan(request):
     QueQuan = request.data.get('QueQuan')
     NoiO = request.data.get('NoiO')
     result = NVSiQuan.ThemSiQuan(HoTen, NgaySinh, MaQuanNhan, DonVi_id, ChucVu_id, CapBac_id, NhomSQ_id, NgayNhapNgu, SoCanCuoc, QueQuan, NoiO)
+    print(HoTen, NgaySinh, MaQuanNhan, DonVi_id, ChucVu_id, CapBac_id, NhomSQ_id, NgayNhapNgu, SoCanCuoc, QueQuan, NoiO)
     if result["status"] == "success":
         return Response(result, status=status.HTTP_200_OK)
     else:
