@@ -194,21 +194,26 @@ def DanhSachTiepKhachSiQuan():
         return {"status": "error", "message": str(e)}
     
 
-def danh_sach_the_khach(page=1):
+def danh_sach_the_khach():
     # Lấy tất cả các thẻ khách
-    danh_sach_the = TheKhachModel.TheKhachModel.objects.all()
-    
-    # Phân trang
-    paginator = Paginator(danh_sach_the, 50)  # Số lượng thẻ trên mỗi trang  # Số trang hiện tại, mặc định là 1
-    page_obj = paginator.get_page(page)
-    
-    # Chuẩn bị dữ liệu để trả về dưới dạng JSON
-    data = {
-        'the_khach': list(page_obj.object_list.values()),
-        'page_number': page_obj.number,
-        'num_pages': paginator.num_pages,
-        'has_next': page_obj.has_next(),
-        'has_previous': page_obj.has_previous(),
-    }
-    
-    return {"status": "success", "data": data}
+    try:
+        # Lấy tất cả các thẻ khách
+        danh_sach_the = TheKhachModel.TheKhachModel.objects.all()
+
+        # Chuyển đổi QuerySet thành danh sách với các trạng thái được cập nhật
+        data = []
+        for the in danh_sach_the:
+            trang_thai = 'Chưa sử dụng' if not the.DangSuDung else  'Đang sử dụng'
+            trang_thai_dang_su_dung = 'Đã hủy' if not the.TrangThai else 'Có thể sử dụng'
+            
+            data.append({
+                'id': the.id,
+                'SoThe': the.SoThe,
+                'TrangThai': trang_thai_dang_su_dung,
+                'DangSuDung': trang_thai
+            })
+
+        return {"status": "success", "data": data}
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}

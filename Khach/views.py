@@ -116,8 +116,7 @@ def DanhSachTiepKhachSiQuan(request):
 
 @api_view(['GET'])
 def danh_sach_the_khach(request):
-    page=request.query_params.get('page')
-    result = NVKhach.danh_sach_the_khach(page)
+    result = NVKhach.danh_sach_the_khach()
     if result["status"] == "success":
         return Response(data=result,status=status.HTTP_200_OK)
     else:

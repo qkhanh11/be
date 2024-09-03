@@ -1,7 +1,22 @@
-from model import CongGacModel, PCTrucBanModel, CaGacVBModel, PCVeBinhModel, PCVeBinhChiTietModel,ChienSiModel
+from model import CongGacModel, PCTrucBanModel, CaGacVBModel, PCGacNgayModel, PCVeBinhModel, PCVeBinhChiTietModel,ChienSiModel
 from .NVSiQuan import LaySQTuMa
 from .NVChienSi import LayChienSiTuMa
-from datetime import date
+from datetime import date,time
+from datetime import datetime
+
+
+
+def ChuyenDinhDangNgay(ngay):
+    try:
+        # Chuyển đổi chuỗi ngày vào định dạng datetime
+        ngay_obj = datetime.strptime(ngay, '%Y-%m-%d').date()
+        
+        # Chuyển đổi datetime thành chuỗi ngày với định dạng hai chữ số cho tháng và ngày
+        # ngay_dinh_dang = ngay_obj.strftime('%Y-%m-%d')
+        
+        return ngay_obj
+    except ValueError:
+        return {"status": "error", "message": "Ngày không hợp lệ"}
 
 
 def ThemCong(TenCong, ViTri):
@@ -53,8 +68,7 @@ def LayDanhSachCong():
 
 def ThemTrucBan(ngay,TBTruong,TBPho):
     try:
-        if isinstance(ngay, str):
-            ngay = date.fromisoformat(ngay) 
+        ngay = ChuyenDinhDangNgay(ngay)
         if date.today() > ngay:
             return {"status": "error", "message": "Không thể thêm trực ban vào quá khứ"}
         banghi= PCTrucBanModel.PCTrucBanModel.objects.filter(Ngay=ngay).exists()
@@ -79,12 +93,16 @@ def ThemTrucBan(ngay,TBTruong,TBPho):
         return {"status": "error", "message": str(e)}
     
 
-def SuaTrucBan(id, ngay,TBTruong,TBPho):
+def SuaTrucBan(id,TBTruong,TBPho):
     try:
-        if isinstance(ngay, str):
-            ngay = date.fromisoformat(ngay) 
-        if date.today() > ngay:
-            return {"status": "error", "message": "Không thể sửa trực ban vào quá khứ"}
+    
+        
+        pctrucban = PCTrucBanModel.PCTrucBanModel.objects.get(pk=id)
+
+        
+        # Kiểm tra xem ngày của bản ghi có phải là ngày trong quá khứ hay không
+        if date.today() > pctrucban.Ngay:
+            return {"status": "error", "message": "Không thể sửa trực ban vào ngày đã qua"}
         SQ1 = LaySQTuMa(TBTruong)
         if not SQ1:
             return {"status": "error", "message": "Không tồn tại mã quân nhân của trực ban trưởng"}
@@ -96,7 +114,6 @@ def SuaTrucBan(id, ngay,TBTruong,TBPho):
             return {"status": "error", "message": "Một người chỉ trực một vị trí một ngày"}
         
         pctrucban = PCTrucBanModel.PCTrucBanModel.objects.get(pk=id)
-        pctrucban.Ngay=ngay
         pctrucban.TBTruong=SQ1
         pctrucban.TBPho=SQ2
         pctrucban.save()
@@ -114,12 +131,12 @@ def XoaTrucBan(id):
         return {"status": "error", "message": str(e)}
 
 
-def ThemCaGac(Ca,TGBatDau,TGKetThuc):
+def ThemCaGac(Ca,GioBatDau,GioKetThuc,PhutBatDau,PhutKetThuc):
     try:
         cagac = CaGacVBModel.CaGacVBModel.objects.create(
             Ca=Ca,
-            TGBatDau=TGBatDau,
-            TGKetThuc=TGKetThuc
+            TGBatDau=time(int(GioBatDau), int(PhutBatDau)),
+            TGKetThuc=time(int(GioKetThuc), int(PhutKetThuc)),
         )
         return {"status": "success", "data": 'Thêm thành công'}
     
@@ -127,12 +144,26 @@ def ThemCaGac(Ca,TGBatDau,TGKetThuc):
         return {"status": "error", "message": str(e)}
     
 
+
+def SuaCaGac(id,Ca,GioBatDau,GioKetThuc,PhutBatDau,PhutKetThuc):
+    try:
+        cagac = CaGacVBModel.CaGacVBModel.objects.get(pk=id)
+        cagac.Ca=Ca
+        cagac.TGBatDau=time(int(GioBatDau), int(PhutBatDau))
+        cagac.TGKetThuc=time(int(GioKetThuc), int(PhutKetThuc))
+        return {"status": "success", "data": 'Thêm thành công'}
+    
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+    
+
 def XoaCaGac(id):
     try:
         cagac = CaGacVBModel.CaGacVBModel.objects.get(pk=id)
         cagac.TrangThai=False
         cagac.save()
-        return {"status": "success", "data": 'Thêm thành công'}
+        return {"status": "success", "data": 'Xóa thành công'}
     
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -140,21 +171,21 @@ def XoaCaGac(id):
 
 def ThemPCCaGac(Ngay,CongGac):
     try:
-        if isinstance(ngay, str):
-            ngay = date.fromisoformat(ngay)
-        if date.today() > Ngay:
+        ngay = ChuyenDinhDangNgay(Ngay)
+        if date.today() > ngay:
             return {"status": "error", "message": "Không thể phân công gác cho quá khứ"}
         
         cong_gac = CongGacModel.CongGacModel.objects.get(id=CongGac)
 
-
+        NgayCong = PCGacNgayModel.PCGacNgayModel.objects.create(Ngay=Ngay, CongGac=cong_gac)
+        NgayCong.save()
 
         # Lấy danh sách tất cả các ca gác có TrangThai là True
-        ca_gac_list = CongGacModel.CongGacModel.objects.filter(TrangThai=True)
+        ca_gac_list = CaGacVBModel.CaGacVBModel.objects.filter(TrangThai=True)
 
         # Tạo các bản ghi phân công vệ binh
         for ca in ca_gac_list:
-            PCVeBinhModel.PCVeBinhModel.objects.create(Ngay=Ngay, Ca=ca, CongGac=cong_gac)
+            PCVeBinhModel.PCVeBinhModel.objects.create(Ca=ca, NgayCong=NgayCong)
 
         return {"status": "success", "message": "Phân công vệ binh đã được tạo thành công."}
 
@@ -234,8 +265,8 @@ def lay_ngay_theo_cong(cong_gac_id):
     try:
         # Lấy danh sách các ngày duy nhất có bản ghi với id cổng đã cho
         ngay_danh_sach = (
-            PCVeBinhModel.PCVeBinhModel.objects.filter(CongGac_id=cong_gac_id)
-            .order_by('Ngay')  # Sắp xếp theo ngày
+            PCGacNgayModel.PCGacNgayModel.objects.filter(CongGac_id=cong_gac_id)
+            .order_by('-Ngay')  # Sắp xếp theo ngày
             .values('id', 'Ngay')
             .distinct()  # Loại bỏ các ngày trùng lặp
         )
@@ -316,7 +347,39 @@ def XemTatCaTrucBan():
         truc_ban_list = (
             PCTrucBanModel.PCTrucBanModel.objects.all()
             .order_by('-Ngay')  # Sắp xếp theo ngày giảm dần
-            .values('id', 'Ngay')  # Lấy id và ngày của các bản ghi
+            .values(
+                'id', 
+                'Ngay', 
+                'TBTruong__HoTen',  # Lấy tên của Trực Ban Trưởng
+                'TBPho__HoTen'  # Lấy tên của Trực Ban Phó
+            )  # Lấy id và ngày của các bản ghi
+        )
+        
+        # Chuyển đổi QuerySet thành danh sách
+        truc_ban_list = list(truc_ban_list)
+
+        return {"status": "success", "data": truc_ban_list}
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
+
+def TimTrucBanTheoKhoangNgay(ngay_bat_dau, ngay_ket_thuc):
+    try:
+        # Chuyển đổi chuỗi ngày thành đối tượng datetime
+        ngay_bat_dau = datetime.strptime(ngay_bat_dau, '%Y-%m-%d').date()
+        ngay_ket_thuc = datetime.strptime(ngay_ket_thuc, '%Y-%m-%d').date()
+
+        # Lấy các bản ghi từ PCTrucBanModel trong khoảng thời gian xác định và sắp xếp theo ngày giảm dần
+        truc_ban_list = (
+            PCTrucBanModel.PCTrucBanModel.objects.filter(Ngay__range=[ngay_bat_dau, ngay_ket_thuc])
+            .order_by('-Ngay')  # Sắp xếp theo ngày giảm dần
+            .values(
+                'id', 
+                'Ngay', 
+                'TBTruong__HoTen',  # Lấy tên của Trực Ban Trưởng
+                'TBPho__HoTen'  # Lấy tên của Trực Ban Phó
+            )
         )
         
         # Chuyển đổi QuerySet thành danh sách
@@ -352,6 +415,84 @@ def XemChiTietTrucBan(id):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+
+def LayThongTinTrucBanTheoID(truc_ban_id):
+    try:
+        # Lấy bản ghi từ PCTrucBanModel dựa trên id được truyền vào
+        truc_ban = PCTrucBanModel.PCTrucBanModel.objects.filter(id=truc_ban_id).values(
+            'TBTruong__HoTen',  # Họ tên Trực Ban Trưởng
+            'TBTruong__ChucVu__TenChucVu',  # Tên chức vụ Trực Ban Trưởng
+            'TBTruong__DonVi__TenDonVi',  # Tên đơn vị Trực Ban Trưởng
+            'TBTruong__DonVi__SoDienThoai',  # Số điện thoại Trực Ban Trưởng
+            'TBPho__HoTen',  # Họ tên Trực Ban Phó
+            'TBPho__ChucVu__TenChucVu',  # Tên chức vụ Trực Ban Phó
+            'TBPho__DonVi__TenDonVi',  # Tên đơn vị Trực Ban Phó
+            'TBPho__DonVi__SoDienThoai'  # Số điện thoại Trực Ban Phó
+        ).first()
+
+        if truc_ban:
+            # Định dạng dữ liệu trả về theo mẫu
+            result = {
+                "TBTruong": {
+                    "HoTen": truc_ban.get('TBTruong__HoTen', ''),
+                    "ChucVu": truc_ban.get('TBTruong__ChucVu__TenChucVu', ''),
+                    "DonVi": truc_ban.get('TBTruong__DonVi__TenDonVi', ''),
+                    "SoDienThoai": truc_ban.get('TBTruong__DonVi__SoDienThoai', '')
+                },
+                "TBPho": {
+                    "HoTen": truc_ban.get('TBPho__HoTen', ''),
+                    "ChucVu": truc_ban.get('TBPho__ChucVu__TenChucVu', ''),
+                    "DonVi": truc_ban.get('TBPho__DonVi__TenDonVi', ''),
+                    "SoDienThoai": truc_ban.get('TBPho__DonVi__SoDienThoai', '')
+                }
+            }
+            return {"status": "success", "data": result}
+        else:
+            return {"status": "error", "message": "Không tìm thấy ca trực ban với ID này"}
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
     
+
+
+def LayTatCaCaGac():
+    try:
+        # Lấy tất cả các bản ghi từ CaGacVBModel
+        danh_sach_ca_gac = CaGacVBModel.CaGacVBModel.objects.filter(TrangThai=True)
+        
+        # Chuyển đổi QuerySet thành danh sách các bản ghi với các trường cần thiết
+        data = list(danh_sach_ca_gac.values('id', 'Ca', 'TGBatDau', 'TGKetThuc', 'TrangThai'))
+
+        return {"status": "success", "data": data}
+    
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
+
+
+def LayCaGacTrongNgayCong(id_NgayCong):
+    try:
+        # Tìm ngày công theo ID
+        ngay_cong = PCGacNgayModel.PCGacNgayModel.objects.get(pk=id_NgayCong)
+        
+        # Lấy danh sách các ca gác trong ngày công đó
+        ca_gac_list = PCVeBinhModel.PCVeBinhModel.objects.filter(NgayCong=ngay_cong).select_related('Ca')
+
+        # Tạo danh sách các ca gác với thông tin chi tiết
+        data = []
+        for ca_gac in ca_gac_list:
+            data.append({
+                "Ca": ca_gac.Ca.Ca,
+                "TGBatDau": ca_gac.Ca.TGBatDau,
+                "TGKetThuc": ca_gac.Ca.TGKetThuc
+            })
+        
+        return {"status": "success", "data": data}
+
+    except PCGacNgayModel.PCGacNgayModel.DoesNotExist:
+        return {"status": "error", "message": "Không tìm thấy Ngày Công với ID này"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 
 

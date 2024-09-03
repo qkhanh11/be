@@ -59,3 +59,4 @@ from .SQ_DVModel import SQ_DVModel
 from .LoaiKhachModel import LoaiKhachModel
 from .CongGacModel import CongGacModel
 from .KhachHocVienModel import KhachHocVienModel
+from .PCGacNgayModel import PCGacNgayModel

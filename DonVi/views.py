@@ -10,9 +10,9 @@ def Them(request):
     TenDonVi = request.data.get('TenDonVi')
     DiaDiem = request.data.get('DiaDiem')
     MaDonVi = request.data.get('MaDonVi')
-    id_DonViCapTren = request.data.get('id_DonViCapTren')
+    id_DonViCapTren = request.data.get('DonViCapTren')
     SoDienThoai = request.data.get('SoDienThoai')
-    CapNhomDonVi = request.data.get('CapNhomDonVi')
+    CapNhomDonVi = request.data.get('CapDonVi')
     print(TenDonVi, DiaDiem, MaDonVi, id_DonViCapTren, SoDienThoai, CapNhomDonVi)
     result = NVDonVi.ThemDonVi(TenDonVi, DiaDiem, MaDonVi, id_DonViCapTren, SoDienThoai, CapNhomDonVi)
     if result["status"] == "success":

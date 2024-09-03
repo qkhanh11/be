@@ -173,8 +173,6 @@ def DropDownDV(id_CapDonVi):
         don_vi_list = DonViModel.DonViModel.objects.filter(CapNhomDonVi__id=id_CapDonVi).values('id', 'TenDonVi', 'MaDonVi')
         
         # Nếu không có đơn vị nào được tìm thấy
-        if not don_vi_list:
-            return {"status": "error", "message": "Không tìm thấy đơn vị với id này"}
         
         # Trả về dữ liệu với status success
         return {"status": "success", "data": list(don_vi_list)}
