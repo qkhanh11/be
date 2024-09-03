@@ -190,6 +190,7 @@ def TimSiQuan(TimKiem, TenDV, trang=1):
             results.append({
                 "id": si_quan.id,
                 "HoTen": si_quan.HoTen,
+                "NhomSQ": si_quan.NhomSQ.TenNhom,
                 "MaQuanNhan": si_quan.MaQuanNhan,
                 "TenDonVi": si_quan.DonVi.TenDonVi,
                 "TenCapBac": si_quan.CapBac.TenCapBac 

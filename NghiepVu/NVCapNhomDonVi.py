@@ -4,16 +4,26 @@ from model import NhomDonViModel,CapNhomDonViModel
 
 def ThemCapNhomDonVi(NhomDonVi,Ten,CapTren):
     try:
+        # Lấy đối tượng NhomDonVi từ id
         NhomDV = NhomDonViModel.NhomDonViModel.objects.get(pk=NhomDonVi)
+        
+        # Nếu CapTren không rỗng, lấy đối tượng CapNhomDonVi từ id
+        CapNhomTren = None
+        if CapTren:
+            CapNhomTren = CapNhomDonViModel.CapNhomDonViModel.objects.get(pk=CapTren)
+        
+        # Tạo đối tượng CapNhomDonVi mới
         Them = CapNhomDonViModel.CapNhomDonViModel(
-            id_NhomDonVi = NhomDV,
-            CapTren = CapTren,
-            Ten = Ten
+            id_NhomDonVi=NhomDV,
+            Ten=Ten,
+            CapTren=CapNhomTren
         )
+        
+        # Lưu đối tượng vào database
         Them.save()
         return {"status": "success", "message": "Thêm thành công."}
-    except:
-        return {"status": "error", "message": "Thêm thất bại."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
     
 
 def SuaCapNhomDonVi(id,NhomDonVi,Ten,Cap):
@@ -158,7 +168,6 @@ def CapTrenThemCNDV(id_nhom):
 
         # Chuyển đổi dữ liệu thành dạng có thể trả về
         data = [{"id": "", "Ten": "Không có đơn vị cấp trên"}]  # Thêm dòng mặc định
-        data = []
         for cap in cap_list:
             ten_cap = cap.Ten
             cap_tren_ten = cap.CapTren.Ten if cap.CapTren else ""
