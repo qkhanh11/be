@@ -20,3 +20,7 @@ class SiQuanModel(models.Model):
     NoiO = models.CharField(max_length=60)
     TrangThai = models.BooleanField(default=True)
 
+
+    def __str__(self) -> str:
+        return self.HoTen
+

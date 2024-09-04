@@ -17,6 +17,9 @@ def RaVaoSQ(sothe,trangthai,cong):
         pass
     thoigian = timezone.now() + timedelta(hours=7)
     thoigian_gio = thoigian.time()
+    the = TheSiQuanModel.TheSiQuanModel.objects.get(SoThe=sothe, TrangThai= True)
+    SQ = the.SiQuan
+    Cong = CongGacModel.CongGacModel.objects.get(pk=cong)
     for tg_vao, tg_ra in tg_ra_va_tg_vao:
            print(tg_ra,tg_vao)
            if thoigian_gio > tg_vao and thoigian_gio < tg_ra:
@@ -39,9 +42,8 @@ def RaVaoSQ(sothe,trangthai,cong):
                     Cong = Cong
                 )
                     return {"status": "error", "message": "Ra trước thời gian quy định"}
-    the = TheSiQuanModel.TheSiQuanModel.objects.get(SoThe=sothe, TrangThai= True)
-    SQ = the.SiQuan
-    Cong = CongGacModel.CongGacModel.objects.get(pk=cong)
+    
+    
     ls_ravao = LSRaVaoSQModel.LSRaVaoSQModel.objects.create(
         SiQuan = SQ,
         SoThe = the,
@@ -72,6 +74,7 @@ def RaVaoSQDacBiet(sothe,trangthai,cong):
 def lay_lich_su_ra_vao():
     # Lấy tất cả bản ghi từ LSRaVaoSQModel
     ls_ra_vao_list = LSRaVaoSQModel.LSRaVaoSQModel.objects.select_related('SiQuan', 'SoThe', 'Cong').values(
+        'id',
         'SiQuan__HoTen', 
         'SiQuan__DonVi__TenDonVi',
         'SiQuan__NhomSQ__TenNhom',

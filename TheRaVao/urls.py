@@ -14,6 +14,7 @@ urlpatterns = [
     path('HuyTheQNCN/<int:id>',views.HuyTheQNCN,name="HuyTheQNCN"),
     path('HuyThevc/<int:id>',views.HuyThevc,name="HuyThevc"),
     path('ThemNamTheSQ/',views.ThemNamTheSQ,name="ThemNamTheSQ"),
+    path('TenSQTuThe/',views.TenSQTuThe,name="TenSQTuThe"),
     # path('xemlsdv/<int:id>',views.LSDV,name="LichSuDonViSQ"),
     # path('xemlscv/<int:id>',views.LSCV,name="LichSuChucVuSQ"),
     # path('thongtinchitiet/<int:id>',views.ThongTinChiTiet,name="ThongTinChiTietSQ"),

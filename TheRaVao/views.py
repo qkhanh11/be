@@ -83,4 +83,12 @@ def ThemNamTheSQ(request):
     nam = request.data.get('nam')
     result = NVTheRaVao.ThemNamTheSQ(the_id=the_id, nam= nam)
     return Response(data=result,status=status.HTTP_200_OK)
+
+
+
+@api_view(['GET'])
+def TenSQTuThe(request):
+    sothe = request.GET.get('sothe')
+    result = NVTheRaVao.TenSQTuThe(sothe)
+    return Response(data=result,status=status.HTTP_200_OK)
     

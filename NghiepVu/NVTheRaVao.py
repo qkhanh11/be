@@ -229,5 +229,11 @@ def The_NhomSQ(sothe):
     except Exception as e:
         return {"status": "error", "message": str(e)}
     
-
+def TenSQTuThe(sothe):
+    try:
+        thesq=TheSiQuanModel.TheSiQuanModel.objects.get(SoThe=sothe,TrangThai=True)
+        SQ=thesq.SiQuan
+        return {"status": "success", "message": SQ.HoTen}
+    except:
+        return {"status": "success", "message": ""}
 

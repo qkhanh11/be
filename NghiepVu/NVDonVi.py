@@ -9,6 +9,11 @@ def ThemDonVi(TenDonVi, DiaDiem, MaDonVi, id_DonViCapTren, SoDienThoai, CapNhomD
     except:
         pass
     try:
+        donvi = DonViModel.DonViModel.objects.get(MaDonVi=MaDonVi)
+        return {"status": "error", "message": "Đã tồn tại mã đơn vị"}
+    except:
+        pass
+    try:
         # Tạo đối tượng DonViModel mới
         CapNhom = CapNhomDonViModel.CapNhomDonViModel.objects.get(pk=CapNhomDonVi)
         don_vi = DonViModel.DonViModel(

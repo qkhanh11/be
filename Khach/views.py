@@ -79,6 +79,7 @@ def TiepKhachSQ(request):
     Loai = request.data.get('Loai')
     TheKhach = request.data.get('TheKhach')
     GhiChu = request.data.get('GhiChu')
+    print(SiQuan,HoTenKhach,SoDinhDanh,Loai,TheKhach,GhiChu)
     result = NVKhach.TiepKhachSQ(SiQuan,HoTenKhach,SoDinhDanh,Loai,TheKhach,GhiChu)
     if result["status"] == "success":
         return Response(data=result,status=status.HTTP_200_OK)
