@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 from .CaGacVBModel import CaGacVBModel
 from .CapBacModel import CapBacModel
-from .CapNhomDonViModel import CapNhomDonViModel
+from .CapDonViModel import CapDonViModel
 from .CBHaSiQuanModel import CBHaSiQuanModel
 from .ChienSiModel import ChienSiModel
 from .CVQNCNModel import CVQNCNModel

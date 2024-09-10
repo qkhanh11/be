@@ -1,5 +1,5 @@
 from model import NhomDonViModel
-from model import NhomDonViModel,CapNhomDonViModel
+from model import NhomDonViModel,CapDonViModel
 
 
 def ThemCapNhomDonVi(NhomDonVi,Ten,CapTren):
@@ -10,10 +10,10 @@ def ThemCapNhomDonVi(NhomDonVi,Ten,CapTren):
         # Nếu CapTren không rỗng, lấy đối tượng CapNhomDonVi từ id
         CapNhomTren = None
         if CapTren:
-            CapNhomTren = CapNhomDonViModel.CapNhomDonViModel.objects.get(pk=CapTren)
+            CapNhomTren = CapDonViModel.CapDonViModel.objects.get(pk=CapTren)
         
         # Tạo đối tượng CapNhomDonVi mới
-        Them = CapNhomDonViModel.CapNhomDonViModel(
+        Them = CapDonViModel.CapDonViModel(
             id_NhomDonVi=NhomDV,
             Ten=Ten,
             CapTren=CapNhomTren
@@ -29,7 +29,7 @@ def ThemCapNhomDonVi(NhomDonVi,Ten,CapTren):
 def SuaCapNhomDonVi(id,NhomDonVi,Ten,Cap):
     try:
         NhomDV = NhomDonViModel.NhomDonViModel.objects.get(pk=NhomDonVi)
-        CapNhom = CapNhomDonViModel.CapNhomDonViModel.objects.get(pk=id)
+        CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=id)
         CapNhom.id_NhomDonVi = NhomDV
         CapNhom.Cap= Cap
         CapNhom.Ten= Ten
@@ -39,7 +39,7 @@ def SuaCapNhomDonVi(id,NhomDonVi,Ten,Cap):
 
         return {"status": "success", "message": "Cập nhật thành công."}
 
-    except CapNhomDonViModel.CapNhomDonViModel.DoesNotExist:
+    except CapDonViModel.CapDonViModel.DoesNotExist:
         return {"status": "error", "message": "id được cung cấp không tồn tại."}
 
     except Exception as e:
@@ -49,14 +49,14 @@ def SuaCapNhomDonVi(id,NhomDonVi,Ten,Cap):
 def XoaCapNhomDonVi(id):
     try:
         # Lấy đối tượng dựa trên khóa chính (id)
-        CapNhom = CapNhomDonViModel.CapNhomDonViModel.objects.get(pk=id)
+        CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=id)
         
         # Xóa đối tượng khỏi cơ sở dữ liệu
         CapNhom.delete()
 
         return {"status": "success", "message": "Xóa thành công."}
 
-    except CapNhomDonViModel.CapNhomDonViModel.DoesNotExist:
+    except CapDonViModel.CapDonViModel.DoesNotExist:
         return {"status": "error", "message": "id được cung cấp không tồn tại."}
 
     except Exception as e:
@@ -66,7 +66,7 @@ def XoaCapNhomDonVi(id):
 def TimKiemTheoNhom(id_nhom):
     try:
         # Tìm các đối tượng CapNhomDonVi liên quan đến id_nhom
-        cap_list = CapNhomDonViModel.CapNhomDonViModel.objects.filter(id_NhomDonVi_id=id_nhom)
+        cap_list = CapDonViModel.CapDonViModel.objects.filter(id_NhomDonVi_id=id_nhom)
 
         # Chuyển đổi dữ liệu thành dạng có thể trả về
         data = []
@@ -95,7 +95,7 @@ def TimKiemTheoNhom(id_nhom):
 
     try:
         # Tìm các đối tượng CapNhomDonVi liên quan đến id_nhom
-        cap_list = CapNhomDonViModel.CapNhomDonViModel.objects.filter(id_NhomDonVi_id=id_nhom)
+        cap_list = CapDonViModel.CapDonViModel.objects.filter(id_NhomDonVi_id=id_nhom)
 
         # Chuyển đổi dữ liệu thành dạng có thể trả về
         data = []
@@ -114,8 +114,8 @@ def TimKiemTheoNhom(id_nhom):
 
 def ThongTin(id):
     try:
-        # Tìm đối tượng CapNhomDonViModel theo id
-        cap_nhom = CapNhomDonViModel.CapNhomDonViModel.objects.get(pk=id)
+        # Tìm đối tượng CapDonViModel theo id
+        cap_nhom = CapDonViModel.CapDonViModel.objects.get(pk=id)
 
         # Chuyển đổi dữ liệu thành dạng từ điển
         data = {
@@ -126,7 +126,7 @@ def ThongTin(id):
 
         return {"status": "success", "data": data}
 
-    except CapNhomDonViModel.CapNhomDonViModel.DoesNotExist:
+    except CapDonViModel.CapDonViModel.DoesNotExist:
         return {"status": "error", "message": "Không tìm thấy đối tượng với id này."}
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -135,7 +135,7 @@ def ThongTin(id):
 def ThongTinChiTiet(id):
     try:
         # Lấy thông tin nhóm đơn vị dựa trên id
-        cap_nhom_don_vi = CapNhomDonViModel.CapNhomDonViModel.objects.get(id=id)
+        cap_nhom_don_vi = CapDonViModel.CapDonViModel.objects.get(id=id)
         
         # Lấy tên của id_NhomDonVi
         ten_id_nhom_don_vi = cap_nhom_don_vi.id_NhomDonVi.Ten if cap_nhom_don_vi.id_NhomDonVi else None
@@ -153,7 +153,7 @@ def ThongTinChiTiet(id):
             }
         }
 
-    except CapNhomDonViModel.CapNhomDonViModel.DoesNotExist:
+    except CapDonViModel.CapDonViModel.DoesNotExist:
         return {"status": "error", "message": "Không tìm thấy nhóm đơn vị với id này"}
 
     except Exception as e:
@@ -164,7 +164,7 @@ def ThongTinChiTiet(id):
 def CapTrenThemCNDV(id_nhom):
     try:
         # Tìm các đối tượng CapNhomDonVi liên quan đến id_nhom
-        cap_list = CapNhomDonViModel.CapNhomDonViModel.objects.filter(id_NhomDonVi_id=id_nhom)
+        cap_list = CapDonViModel.CapDonViModel.objects.filter(id_NhomDonVi_id=id_nhom)
 
         # Chuyển đổi dữ liệu thành dạng có thể trả về
         data = [{"id": "", "Ten": "Không có đơn vị cấp trên"}]  # Thêm dòng mặc định

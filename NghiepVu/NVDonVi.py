@@ -1,5 +1,5 @@
 from model import NhomDonViModel
-from model import NhomDonViModel,CapNhomDonViModel,DonViModel
+from model import NhomDonViModel,CapDonViModel,DonViModel
 
 
 def ThemDonVi(TenDonVi, DiaDiem, MaDonVi, id_DonViCapTren, SoDienThoai, CapNhomDonVi):
@@ -15,7 +15,7 @@ def ThemDonVi(TenDonVi, DiaDiem, MaDonVi, id_DonViCapTren, SoDienThoai, CapNhomD
         pass
     try:
         # Tạo đối tượng DonViModel mới
-        CapNhom = CapNhomDonViModel.CapNhomDonViModel.objects.get(pk=CapNhomDonVi)
+        CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=CapNhomDonVi)
         don_vi = DonViModel.DonViModel(
             TenDonVi=TenDonVi,
             DiaDiem=DiaDiem,
@@ -44,7 +44,7 @@ def SuaDonVi(id,TenDonVi, DiaDiem, MaDonVi, id_DonViCapTren, SoDienThoai, CapNho
         pass
     try:
         # Tạo đối tượng DonViModel mới
-        CapNhom = CapNhomDonViModel.CapNhomDonViModel.objects.get(pk=CapNhomDonVi)
+        CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=CapNhomDonVi)
 
         don_vi = DonViModel.DonViModel.objects.get(pk=id)
         don_vi.TenDonVi=TenDonVi,
@@ -81,9 +81,9 @@ def XoaDonVi(id):
     
 
 def TimDVCapTren(id_CapNhomDV):
-    CapHienTai = CapNhomDonViModel.CapNhomDonViModel.objects.get(pk=id)
+    CapHienTai = CapDonViModel.CapDonViModel.objects.get(pk=id)
 
-        # Tìm đối tượng CapNhomDonViModel có Cap nhỏ hơn 1 đơn vị
+        # Tìm đối tượng CapDonViModel có Cap nhỏ hơn 1 đơn vị
     CapTren = CapHienTai.CapTren
 
     # Tìm tất cả các đơn vị có cấp nhóm là CapTren
@@ -212,8 +212,8 @@ def DonViCon(id):
 
 def DonViChaTheoNhom(id):
     try:
-        # Lọc tất cả các đối tượng CapNhomDonViModel có CapTren là None và id_NhomDonVi là id
-        cap_nhom_don_vi = CapNhomDonViModel.CapNhomDonViModel.objects.filter(id_NhomDonVi=id, CapTren__isnull=True)
+        # Lọc tất cả các đối tượng CapDonViModel có CapTren là None và id_NhomDonVi là id
+        cap_nhom_don_vi = CapDonViModel.CapDonViModel.objects.filter(id_NhomDonVi=id, CapTren__isnull=True)
 
         # Lọc tất cả các đối tượng DonViModel có CapNhomDonVi nằm trong danh sách cap_nhom_don_vi
         don_vi_list = DonViModel.DonViModel.objects.filter(CapNhomDonVi__in=cap_nhom_don_vi)
@@ -230,7 +230,7 @@ def DonViChaTheoNhom(id):
     
 
 def TimDonVi(Nhom, TimKiem=None):
-    # Lọc các đơn vị theo id_NhomDonVi của lớp CapNhomDonViModel
+    # Lọc các đơn vị theo id_NhomDonVi của lớp CapDonViModel
     don_vi_list = DonViModel.DonViModel.objects.filter(CapNhomDonVi__id_NhomDonVi=Nhom)
     
     # Nếu TimKiem không phải là None, thêm điều kiện lọc theo tên hoặc mã đơn vị
@@ -250,7 +250,7 @@ def TimDonVi(Nhom, TimKiem=None):
 def DropdownDonViCha(id_capdonvi):
     try:
         # Tìm cấp nhóm đơn vị con dựa trên id_capdonvi
-        cap_don_vi_con = CapNhomDonViModel.CapNhomDonViModel.objects.get(id=id_capdonvi)
+        cap_don_vi_con = CapDonViModel.CapDonViModel.objects.get(id=id_capdonvi)
 
         # Tìm cấp nhóm đơn vị cha của cấp nhóm đơn vị con
         cap_don_vi_cha = cap_don_vi_con.CapTren
@@ -264,7 +264,7 @@ def DropdownDonViCha(id_capdonvi):
             "data": list(don_vi_cha)
         }
 
-    except CapNhomDonViModel.CapNhomDonViModel.DoesNotExist:
+    except CapDonViModel.CapDonViModel.DoesNotExist:
         return {"status": "error", "message": "Không tìm thấy cấp nhóm đơn vị với id đã cho."}
     except Exception as e:
         return {"status": "error", "message": str(e)}

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .CaGacVBModel import CaGacVBModel
 from .CapBacModel import CapBacModel
-from .CapNhomDonViModel import CapNhomDonViModel
+from .CapDonViModel import CapDonViModel
 from .CBHaSiQuanModel import CBHaSiQuanModel
 from .ChienSiModel import ChienSiModel
 from .CVQNCNModel import CVQNCNModel
@@ -66,7 +66,7 @@ admin.site.register(TheKhachModel)
 admin.site.register(NhomSQModel)
 admin.site.register(ThoiGianQuyenModel)
 admin.site.register(NhomDonViModel)
-admin.site.register(CapNhomDonViModel)
+admin.site.register(CapDonViModel)
 admin.site.register(DonViModel)
 admin.site.register(ChienSiModel)
 admin.site.register(CongGacModel)

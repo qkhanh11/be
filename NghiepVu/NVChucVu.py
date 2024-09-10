@@ -1,10 +1,10 @@
-from model import CVQNCNModel,CVSiQuanModel,CapNhomDonViModel
+from model import CVQNCNModel,CVSiQuanModel,CapDonViModel
 
 
 def ThemCVSQ(TenChucVu,id_CapNhomDonVi):
     try:
         # Tạo đối tượng DonViModel mới
-        CapNhom = CapNhomDonViModel.CapNhomDonViModel.objects.get(pk=id_CapNhomDonVi)
+        CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=id_CapNhomDonVi)
         CVSQ = CVSiQuanModel.CVSiQuanModel(
             TenChucVu=TenChucVu,
             id_CapNhomDonVi=CapNhom  # Sử dụng đối tượng CapNhom trực tiếp
@@ -24,7 +24,7 @@ def ThemCVSQ(TenChucVu,id_CapNhomDonVi):
 def ThemCVQNCN(TenChucVu,id_CapNhomDonVi):
     try:
         # Tạo đối tượng DonViModel mới
-        CapNhom = CapNhomDonViModel.CapNhomDonViModel.objects.get(pk=id_CapNhomDonVi)
+        CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=id_CapNhomDonVi)
         CVQNCN = CVQNCNModel.CVQNCNModel(
             TenChucVu=TenChucVu,
             id_CapNhomDonVi=CapNhom  # Sử dụng đối tượng CapNhom trực tiếp
@@ -43,7 +43,7 @@ def ThemCVQNCN(TenChucVu,id_CapNhomDonVi):
 
 def SuaCVSQ(id,TenChucVu,id_CapNhomDonVi):
     try:
-        CapNhom = CapNhomDonViModel.CapNhomDonViModel.objects.get(pk=id_CapNhomDonVi)
+        CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=id_CapNhomDonVi)
         CVSQ = CVSiQuanModel.CVSiQuanModel.objects.get(pk=id)
         CVSQ.TenChucVu=TenChucVu,
         CVSQ.id_CapNhomDonVi=CapNhom
@@ -62,7 +62,7 @@ def SuaCVSQ(id,TenChucVu,id_CapNhomDonVi):
 
 def SuaCVQNVN(id,TenChucVu,id_CapNhomDonVi):
     try:
-        CapNhom = CapNhomDonViModel.CapNhomDonViModel.objects.get(pk=id_CapNhomDonVi)
+        CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=id_CapNhomDonVi)
         CVQNCN = CVQNCNModel.CVQNCNModel.objects.get(pk=id)
         CVQNCN.TenChucVu=TenChucVu,
         CVQNCN.id_CapNhomDonVi=CapNhom
@@ -136,8 +136,8 @@ def CVQNCN(id_CapNhomDonVi):
 
 def XemCVSQTrongDV(id):
     try:
-        # Lấy đối tượng CapNhomDonViModel bằng id
-        cap_nhom_don_vi = CapNhomDonViModel.CapNhomDonViModel.objects.get(pk=id)
+        # Lấy đối tượng CapDonViModel bằng id
+        cap_nhom_don_vi = CapDonViModel.CapDonViModel.objects.get(pk=id)
         
         # Lọc tất cả các chức vụ sĩ quan dựa trên id_CapNhomDonVi
         chuc_vu_list = CVSiQuanModel.CVSiQuanModel.objects.filter(id_CapNhomDonVi=cap_nhom_don_vi)
