@@ -113,9 +113,10 @@ def XoaNhomSQ(id):
     try:
         # Lấy đối tượng dựa trên khóa chính (id)
         Nhom = NhomSQModel.NhomSQModel.objects.get(pk=id)
+        Nhom.TinhTrang=False
         
         # Xóa đối tượng khỏi cơ sở dữ liệu
-        Nhom.delete()
+        Nhom.save()
 
         return {"status": "success", "message": "Xóa thành công."}
     
@@ -127,9 +128,10 @@ def XoaNhomQNCN(id):
     try:
         # Lấy đối tượng dựa trên khóa chính (id)
         Nhom = NhomQNCNModel.NhomQNCNModel.objects.get(pk=id)
+        Nhom.TinhTrang=False
         
         # Xóa đối tượng khỏi cơ sở dữ liệu
-        Nhom.delete()
+        Nhom.save()
 
         return {"status": "success", "message": "Xóa thành công."}
     
@@ -141,9 +143,10 @@ def XoaNhomVC(id):
     try:
         # Lấy đối tượng dựa trên khóa chính (id)
         Nhom = NhomVCQPModel.NhomVCQPModel.objects.get(pk=id)
+        Nhom.TinhTrang = False
         
         # Xóa đối tượng khỏi cơ sở dữ liệu
-        Nhom.delete()
+        Nhom.save()
 
         return {"status": "success", "message": "Xóa thành công."}
     
@@ -154,7 +157,7 @@ def XoaNhomVC(id):
 def NhomSQ():
     try:
 
-        Nhom = NhomSQModel.NhomSQModel.objects.all()
+        Nhom = NhomSQModel.NhomSQModel.objects.filter(TinhTrang=True)
 
 
         data = list(Nhom.values("id", "TenNhom"))
@@ -168,7 +171,7 @@ def NhomSQ():
 def NhomQNCN():
     try:
 
-        Nhom = NhomQNCNModel.NhomQNCNModel.objects.all()
+        Nhom = NhomQNCNModel.NhomQNCNModel.objects.filter(TinhTrang=True)
 
 
         data = list(Nhom.values("id", "TenNhom"))
@@ -182,7 +185,7 @@ def NhomQNCN():
 def NhomVC():
     try:
 
-        Nhom = NhomVCQPModel.NhomVCQPModel.objects.all()
+        Nhom = NhomVCQPModel.NhomVCQPModel.objects.filter(TinhTrang=True)
 
 
         data = list(Nhom.values("id", "TenNhom"))

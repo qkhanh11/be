@@ -49,9 +49,6 @@ from .ViPhamSQModel import ViPhamSQModel
 from .ViPhamVCModel import ViPhamVCModel
 from .KhachModel import KhachModel
 from .TheKhachModel import TheKhachModel
-from .QNCN_NhomQNCNModel import QNCN_NhomQNCNModel
-from .SQ_NhomSQModel import SQ_NhomSQModel
-from .VC_NhomVCModel import VC_NhomVCModel
 from .SQ_CVModel import SQ_CVModel
 from .SQ_DVModel import SQ_DVModel
 from .LoaiKhachModel import LoaiKhachModel

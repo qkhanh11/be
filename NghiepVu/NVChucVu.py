@@ -1,13 +1,13 @@
 from model import CVQNCNModel,CVSiQuanModel,CapDonViModel
 
 
-def ThemCVSQ(TenChucVu,id_CapNhomDonVi):
+def ThemCVSQ(TenChucVu,id_CapDonVi):
     try:
         # Tạo đối tượng DonViModel mới
-        CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=id_CapNhomDonVi)
+        CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=id_CapDonVi)
         CVSQ = CVSiQuanModel.CVSiQuanModel(
             TenChucVu=TenChucVu,
-            id_CapNhomDonVi=CapNhom  # Sử dụng đối tượng CapNhom trực tiếp
+            id_CapDonVi=CapNhom  # Sử dụng đối tượng CapNhom trực tiếp
         )
 
         # Lưu đối tượng vào cơ sở dữ liệu
@@ -21,13 +21,13 @@ def ThemCVSQ(TenChucVu,id_CapNhomDonVi):
         return {"status": "error", "message": str(e)}
     
 
-def ThemCVQNCN(TenChucVu,id_CapNhomDonVi):
+def ThemCVQNCN(TenChucVu,id_CapDonVi):
     try:
         # Tạo đối tượng DonViModel mới
-        CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=id_CapNhomDonVi)
+        CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=id_CapDonVi)
         CVQNCN = CVQNCNModel.CVQNCNModel(
             TenChucVu=TenChucVu,
-            id_CapNhomDonVi=CapNhom  # Sử dụng đối tượng CapNhom trực tiếp
+            id_CapDonVi=CapNhom  # Sử dụng đối tượng CapNhom trực tiếp
         )
 
         # Lưu đối tượng vào cơ sở dữ liệu
@@ -41,12 +41,12 @@ def ThemCVQNCN(TenChucVu,id_CapNhomDonVi):
         return {"status": "error", "message": str(e)}
     
 
-def SuaCVSQ(id,TenChucVu,id_CapNhomDonVi):
+def SuaCVSQ(id,TenChucVu,id_CapDonVi):
     try:
-        CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=id_CapNhomDonVi)
+        CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=id_CapDonVi)
         CVSQ = CVSiQuanModel.CVSiQuanModel.objects.get(pk=id)
         CVSQ.TenChucVu=TenChucVu,
-        CVSQ.id_CapNhomDonVi=CapNhom
+        CVSQ.id_CapDonVi=CapNhom
         
 
         # Lưu đối tượng vào cơ sở dữ liệu
@@ -60,12 +60,12 @@ def SuaCVSQ(id,TenChucVu,id_CapNhomDonVi):
         return {"status": "error", "message": str(e)}
     
 
-def SuaCVQNVN(id,TenChucVu,id_CapNhomDonVi):
+def SuaCVQNVN(id,TenChucVu,id_CapDonVi):
     try:
-        CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=id_CapNhomDonVi)
+        CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=id_CapDonVi)
         CVQNCN = CVQNCNModel.CVQNCNModel.objects.get(pk=id)
         CVQNCN.TenChucVu=TenChucVu,
-        CVQNCN.id_CapNhomDonVi=CapNhom
+        CVQNCN.id_CapDonVi=CapNhom
         
 
         # Lưu đối tượng vào cơ sở dữ liệu
@@ -83,9 +83,9 @@ def XoaCVSQ(id):
     try:
         # Lấy đối tượng dựa trên khóa chính (id)
         CVSQ = CVSiQuanModel.CVSiQuanModel.objects.get(pk=id)
-        
+        CVSQ.TinhTrang=False
         # Xóa đối tượng khỏi cơ sở dữ liệu
-        CVSQ.delete()
+        CVSQ.save()
 
         return {"status": "success", "message": "Xóa thành công."}
     
@@ -97,9 +97,9 @@ def XoaCVQNCN(id):
     try:
         # Lấy đối tượng dựa trên khóa chính (id)
         CVQNCN = CVQNCNModel.CVQNCNModel.objects.get(pk=id)
-        
+        CVQNCN.TinhTrang=False
         # Xóa đối tượng khỏi cơ sở dữ liệu
-        CVQNCN.delete()
+        CVQNCN.save()
 
         return {"status": "success", "message": "Xóa thành công."}
     
@@ -107,10 +107,10 @@ def XoaCVQNCN(id):
         return {"status": "error", "message": str(e)}
     
 
-def CVSQ(id_CapNhomDonVi):
+def CVSQ(id_CapDonVi):
     try:
-        # Lấy tất cả các chức vụ sĩ quan có id_CapNhomDonVi tương ứng
-        chuc_vu_list = CVSiQuanModel.CVSiQuanModel.objects.filter(id_CapNhomDonVi_id=id_CapNhomDonVi)
+        # Lấy tất cả các chức vụ sĩ quan có id_CapDonVi tương ứng
+        chuc_vu_list = CVSiQuanModel.CVSiQuanModel.objects.filter(id_CapDonVi_id=id_CapDonVi,TinhTrang=True)
 
         # Chuyển đổi dữ liệu thành danh sách các từ điển chứa id và tên chức vụ
         data = list(chuc_vu_list.values("id", "TenChucVu"))
@@ -120,10 +120,10 @@ def CVSQ(id_CapNhomDonVi):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-def CVQNCN(id_CapNhomDonVi):
+def CVQNCN(id_CapDonVi):
     try:
         # Lấy tất cả các chức vụ sĩ quan từ mô hình CVQNCNModel
-        chuc_vu_list = CVQNCNModel.CVQNCNModel.objects.filter(id_CapNhomDonVi_id=id_CapNhomDonVi)
+        chuc_vu_list = CVQNCNModel.CVQNCNModel.objects.filter(id_CapDonVi_id=id_CapDonVi,TinhTrang=True)
 
         # Chuyển đổi dữ liệu thành danh sách các từ điển chứa id và tên chức vụ
         data = list(chuc_vu_list.values("id", "TenChucVu"))
@@ -139,8 +139,8 @@ def XemCVSQTrongDV(id):
         # Lấy đối tượng CapDonViModel bằng id
         cap_nhom_don_vi = CapDonViModel.CapDonViModel.objects.get(pk=id)
         
-        # Lọc tất cả các chức vụ sĩ quan dựa trên id_CapNhomDonVi
-        chuc_vu_list = CVSiQuanModel.CVSiQuanModel.objects.filter(id_CapNhomDonVi=cap_nhom_don_vi)
+        # Lọc tất cả các chức vụ sĩ quan dựa trên id_CapDonVi
+        chuc_vu_list = CVSiQuanModel.CVSiQuanModel.objects.filter(id_CapDonVi=cap_nhom_don_vi,TinhTrang=True)
         
         # Chuyển đổi QuerySet thành danh sách các dictionary chỉ chứa các trường cần thiết
         results = list(chuc_vu_list.values('id', 'TenChucVu'))

@@ -23,9 +23,9 @@ def Xoa(id):
     try:
         # Lấy đối tượng dựa trên khóa chính (id)
         CapBac = CapBacModel.CapBacModel.objects.get(pk=id)
-        
+        CapBac.TinhTrang = False
         # Xóa đối tượng khỏi cơ sở dữ liệu
-        CapBac.delete()
+        CapBac.save()
 
         return {"status": "success", "message": "Xóa thành công."}
     
@@ -52,7 +52,7 @@ def Sua(id,TenCapBac):
 def CapBac():
     try:
 
-        CapBac = CapBacModel.CapBacModel.objects.all()
+        CapBac = CapBacModel.CapBacModel.objects.filter(TinhTrang=True)
 
 
         data = list(CapBac.values("id", "TenCapBac"))
@@ -85,9 +85,9 @@ def XoaCBHSQ(id):
     try:
         # Lấy đối tượng dựa trên khóa chính (id)
         CapBac = CBHaSiQuanModel.CBHaSiQuanModel.objects.get(pk=id)
-        
+        CapBac.TinhTrang=False
         # Xóa đối tượng khỏi cơ sở dữ liệu
-        CapBac.delete()
+        CapBac.save()
 
         return {"status": "success", "message": "Xóa thành công."}
     
@@ -114,7 +114,7 @@ def SuaCBHSQ(id,TenCapBac):
 def CapBacHSQ():
     try:
 
-        CapBac = CBHaSiQuanModel.CBHaSiQuanModel.objects.all()
+        CapBac = CBHaSiQuanModel.CBHaSiQuanModel.objects.filter(TinhTrang=True)
 
 
         data = list(CapBac.values("id", "TenCapBac"))

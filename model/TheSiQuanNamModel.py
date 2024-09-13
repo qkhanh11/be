@@ -4,4 +4,4 @@ from .TheSiQuanModel import TheSiQuanModel
 
 class TheSiQuanNamModel(models.Model):
     The = models.ForeignKey(TheSiQuanModel,on_delete=models.CASCADE)
-    Nam =  models.PositiveIntegerField()
+    Nam =  models.CharField(max_length=5)

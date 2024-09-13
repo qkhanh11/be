@@ -18,4 +18,5 @@ class QNCNModel(models.Model):
     SoCanCuoc = models.CharField(max_length=20)
     QueQuan = models.CharField(max_length=60)
     NoiO = models.CharField(max_length=60)
+    TinhTrang = models.BooleanField(default=True)
 

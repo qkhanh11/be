@@ -51,11 +51,11 @@ from .ViPhamSQModel import ViPhamSQModel
 from .ViPhamVCModel import ViPhamVCModel
 from .KhachModel import KhachModel
 from .TheKhachModel import TheKhachModel
-from .QNCN_NhomQNCNModel import QNCN_NhomQNCNModel
-from .SQ_NhomSQModel import SQ_NhomSQModel
-from .VC_NhomVCModel import VC_NhomVCModel
 from .SQ_CVModel import SQ_CVModel
 from .SQ_DVModel import SQ_DVModel
+from .QNCN_CVModel import QNCN_CVModel
+from .QNCN_DVModel import QNCN_DVModel
+from .VC_DVModel import VC_DVModel
 from .LoaiKhachModel import LoaiKhachModel
 from .CongGacModel import CongGacModel
 from .KhachHocVienModel import KhachHocVienModel
