@@ -19,6 +19,9 @@ def ThemChienSi(HoTen,Ma,NgaySinh,DonVi,CapBac,NgayNhapNgu,SoCanCuoc,QueQuan,Noi
         except ObjectDoesNotExist:
             return {"status": "error", "message": "Đơn vị không tồn tại."}
         
+        MaCS = ChienSiModel.ChienSiModel.objects.filter(Ma=Ma, TinhTrang=True)
+        if MaCS.exists():
+            return {"status": "error", "message": "Mã chiến sĩ đã tồn tại."}
         # Xác thực cấp bậc
         try:
             cap_bac = CBHaSiQuanModel.CBHaSiQuanModel.objects.get(pk=CapBac)
@@ -95,7 +98,8 @@ def XoaChienSi(id):
             return {"status": "error", "message": "Chiến sĩ không tồn tại."}
         
         # Xóa đối tượng chiến sĩ
-        chien_si.delete()
+        chien_si.TinhTrang=False
+        chien_si.save()
         
         return {"status": "success", "message": "Xóa chiến sĩ thành công."}
 
@@ -106,7 +110,7 @@ def XoaChienSi(id):
 def TatCaChienSi():
     try:
         # Truy vấn tất cả các chiến sĩ
-        chien_si_list = ChienSiModel.ChienSiModel.objects.select_related('DonVi', 'CapBac').all()
+        chien_si_list = ChienSiModel.ChienSiModel.objects.select_related('DonVi', 'CapBac').filter(TinhTrang=True)
         
         # Tạo danh sách dữ liệu để trả về
         data = []
@@ -153,3 +157,11 @@ def ChiTietChienSi(id):
         return {"status": "error", "message": str(e)}
     
 
+def LayTenCSTuMa(MaCS):
+    try:
+        CS = ChienSiModel.ChienSiModel.objects.get(Ma=MaCS,TinhTrang=True)
+        return {"status": "success", "HoTen": CS.HoTen}
+    # except Exception as e:
+    #     return {"status": "error", "message": str(e)}
+    except:
+        return {"status": "success", "HoTen": ""}

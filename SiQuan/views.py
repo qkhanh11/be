@@ -96,8 +96,9 @@ def ThongTinChiTiet(request,id):
 
 
 @api_view(['GET'])
-def LayTenSQTuMa(request,id):
-    result = NVSiQuan.LayTenSQTuMa(id)
+def LayTenSQTuMa(request):
+    MaSQ = request.GET.get('MaSQ')
+    result = NVSiQuan.LayTenSQTuMa(MaSQ)
     if result["status"] == "success":
         return Response(result, status=status.HTTP_200_OK)
     else:

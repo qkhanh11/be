@@ -22,5 +22,8 @@ urlpatterns = [
     path('ThemPCCaGac/',views.ThemPCCaGac,name="ThemPCCaGac"),
     path('lay_ngay_theo_cong/<int:id>',views.lay_ngay_theo_cong,name="lay_ngay_theo_cong"),
     path('LayCaGacTrongNgayCong/<int:id>',views.LayCaGacTrongNgayCong,name="LayCaGacTrongNgayCong"),
+    path('ThemPhanCongChiTiet/',views.ThemPhanCongChiTiet,name="ThemPhanCongChiTiet"),
+    path('xem_phan_cong_chi_tiet/<int:id>',views.xem_phan_cong_chi_tiet,name="xem_phan_cong_chi_tiet"),
+    path('xoa_phan_cong_chi_tiet/<int:id>',views.xoa_phan_cong_chi_tiet,name="xoa_phan_cong_chi_tiet"),
     
 ]

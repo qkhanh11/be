@@ -64,8 +64,19 @@ def TatCaChienSi(request):
 
 @api_view(['GET'])
 def ChiTietChienSi(request,id):
-    result = NVChienSi.TatCaChienSi(id)
+    result = NVChienSi.ChiTietChienSi(id)
     if result["status"] == "success":
         return Response(data=result,status=status.HTTP_200_OK)
     else:
         return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def LayTenCSTuMa(request):
+    MaCS = request.GET.get('MaCS')
+    print(MaCS)
+    result = NVChienSi.LayTenCSTuMa(MaCS)
+    if result["status"] == "success":
+        return Response(result, status=status.HTTP_200_OK)
+    else:
+        return Response(result, status=status.HTTP_400_BAD_REQUEST)

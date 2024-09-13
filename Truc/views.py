@@ -133,11 +133,9 @@ def LayTatCaCaGac(request):
 @api_view(['POST'])
 def ThemCaGac(request):
     Ca = request.data.get('Ca')
-    GioBatDau = request.data.get('GioBatDau')
-    GioKetThuc = request.data.get('GioKetThuc')
-    PhutBatDau = request.data.get('PhutBatDau')
-    PhutKetThuc = request.data.get('PhutKetThuc')
-    result = NVTruc.ThemCaGac(Ca,GioBatDau,GioKetThuc,PhutBatDau,PhutKetThuc)
+    ThoiGianBatDau = request.data.get('ThoiGianBatDau')
+    ThoiGianKetThuc = request.data.get('ThoiGianKetThuc')
+    result = NVTruc.ThemCaGac(Ca,ThoiGianBatDau,ThoiGianKetThuc)
     if result["status"] == "success":
         return Response(data=result,status=status.HTTP_200_OK)
     else:
@@ -147,11 +145,9 @@ def ThemCaGac(request):
 @api_view(['PUT'])
 def SuaCaGac(request,id):
     Ca = request.data.get('Ca')
-    GioBatDau = request.data.get('GioBatDau')
-    GioKetThuc = request.data.get('GioKetThuc')
-    PhutBatDau = request.data.get('PhutBatDau')
-    PhutKetThuc = request.data.get('PhutKetThuc')
-    result = NVTruc.SuaCaGac(id, Ca,GioBatDau,GioKetThuc,PhutBatDau,PhutKetThuc)
+    ThoiGianBatDau = request.data.get('ThoiGianBatDau')
+    ThoiGianKetThuc = request.data.get('ThoiGianKetThuc')
+    result = NVTruc.SuaCaGac(id, Ca,ThoiGianBatDau,ThoiGianKetThuc)
     if result["status"] == "success":
         return Response(data=result,status=status.HTTP_200_OK)
     else:
@@ -206,6 +202,34 @@ def LayCaGacTrongNgayCong(request,id):
         return Response(data=result, status=status.HTTP_400_BAD_REQUEST) 
 
 
+
+@api_view(['POST'])
+def ThemPhanCongChiTiet(request):
+    PCCaGac = request.data.get('PCCaGac')
+    MaCS = request.data.get('MaCS')
+    result = NVTruc.ThemPhanCongChiTiet(PCCaGac,MaCS)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST) 
+
+
+@api_view(['GET'])
+def xem_phan_cong_chi_tiet(request,id):
+    result = NVTruc.xem_phan_cong_chi_tiet(id)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST) 
+    
+
+@api_view(['DELETE'])
+def xoa_phan_cong_chi_tiet(request,id):
+    result = NVTruc.xoa_phan_cong_chi_tiet(id)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST) 
 
 
     

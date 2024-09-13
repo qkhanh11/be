@@ -131,12 +131,12 @@ def XoaTrucBan(id):
         return {"status": "error", "message": str(e)}
 
 
-def ThemCaGac(Ca,GioBatDau,GioKetThuc,PhutBatDau,PhutKetThuc):
+def ThemCaGac(Ca,ThoiGianBatDau,ThoiGianKetThuc):
     try:
         cagac = CaGacVBModel.CaGacVBModel.objects.create(
             Ca=Ca,
-            TGBatDau=time(int(GioBatDau), int(PhutBatDau)),
-            TGKetThuc=time(int(GioKetThuc), int(PhutKetThuc)),
+            TGBatDau=ThoiGianBatDau,
+            TGKetThuc=ThoiGianKetThuc,
         )
         return {"status": "success", "data": 'Thêm thành công'}
     
@@ -145,13 +145,13 @@ def ThemCaGac(Ca,GioBatDau,GioKetThuc,PhutBatDau,PhutKetThuc):
     
 
 
-def SuaCaGac(id,Ca,GioBatDau,GioKetThuc,PhutBatDau,PhutKetThuc):
+def SuaCaGac(id,Ca,ThoiGianBatDau,ThoiGianKetThuc):
     try:
         cagac = CaGacVBModel.CaGacVBModel.objects.get(pk=id)
         cagac.Ca=Ca
-        cagac.TGBatDau=time(int(GioBatDau), int(PhutBatDau))
-        cagac.TGKetThuc=time(int(GioKetThuc), int(PhutKetThuc))
-        return {"status": "success", "data": 'Thêm thành công'}
+        cagac.TGBatDau=ThoiGianBatDau
+        cagac.TGKetThuc=ThoiGianKetThuc
+        return {"status": "success", "data": 'Sửa thành công'}
     
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -219,9 +219,9 @@ def ThemPhanCongChiTiet(PCCaGac,MaCS):
         CS = LayChienSiTuMa(MaCS)
         if not CS:
             return {"status": "error", "message": "Mã không hợp lệ"}
-        cong_trung = tim_ten_cong(MaCS,ca_gac_id,pccagac.Ngay)
-        if not cong_trung:
-            {"status": "error", "message": f"Chiến sĩ này đã gác ca này tại cổng {cong_trung[0]}"}
+        cong_trung = tim_ten_cong(CS,pccagac.Ca,pccagac.NgayCong.Ngay)
+        if cong_trung:
+            return {"status": "error", "message": f"Chiến sĩ này đã gác ca này tại cổng {cong_trung}"}
         PCVeBinhChiTietModel.PCVeBinhChiTietModel.objects.create(
             PCVB=pccagac,
             ChienSi=CS
@@ -231,33 +231,18 @@ def ThemPhanCongChiTiet(PCCaGac,MaCS):
         return {"status": "error", "message": str(e)}
 
 
-def tim_ten_cong(ma_chien_si, ca_gac_id, ngay):
-    try:
-        # Lấy đối tượng chiến sĩ dựa trên mã
-        chien_si = ChienSiModel.ChienSiModel.objects.get(Ma=ma_chien_si)
-        
-
-        # Tìm tất cả các bản ghi phân công vệ binh chi tiết
-        pccb_chi_tiet = PCVeBinhChiTietModel.PCVeBinhChiTietModel.objects.filter(
-            ChienSi=chien_si,
-            PCVB__Ca_id=ca_gac_id,
-            PCVB__Ngay=ngay
-        ).select_related('PCVB__CongGac')
-
-        # Kiểm tra nếu không có bản ghi nào thì trả về None
-        if not pccb_chi_tiet.exists():
-            return None
-
-        # Tạo danh sách tên cổng
-        ten_cac_cong = [pcvb_chi_tiet.PCVB.CongGac.TenCong for pcvb_chi_tiet in pccb_chi_tiet]
-
-        return ten_cac_cong
-
-    except ChienSiModel.ChienSiModel.DoesNotExist:
-        return {"status": "error", "message": "Mã không hợp lệ"}
-
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
+def tim_ten_cong(ChienSi, Ca, Ngay):
+    # Tìm các bản ghi trong PCVeBinhModel có cùng Ca và NgayCong
+    Ngay_gac = PCGacNgayModel.PCGacNgayModel.objects.filter(Ngay=Ngay)
+    for i in Ngay_gac:
+        PCVeBinh = PCVeBinhModel.PCVeBinhModel.objects.filter(Ca=Ca,NgayCong=i)
+        for j in PCVeBinh:
+            PCChiTiet = PCVeBinhChiTietModel.PCVeBinhChiTietModel.objects.filter(ChienSi=ChienSi, PCVB=j).first()
+            
+            if PCChiTiet:
+                print(j.NgayCong.CongGac.TenCong)
+                return j.NgayCong.CongGac.TenCong
+    return None
     
 
 
@@ -274,7 +259,7 @@ def lay_ngay_theo_cong(cong_gac_id):
         # Chuyển đổi QuerySet thành danh sách
         ngay_danh_sach = list(ngay_danh_sach)
 
-        return {"status": "error", "data": ngay_danh_sach}
+        return {"status": "success", "data": ngay_danh_sach}
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -293,7 +278,7 @@ def laycagaccong(ngay, cong_id):
         # Chuyển đổi QuerySet thành danh sách
         ca_gac_list = list(ca_gac_list)
 
-        return {"status": "error", "data": ca_gac_list}
+        return {"status": "success", "data": ca_gac_list}
 
 
     except Exception as e:
@@ -324,7 +309,7 @@ def xoa_phan_cong_chi_tiet(id):
         phan_cong_chi_tiet = PCVeBinhChiTietModel.PCVeBinhChiTietModel.objects.select_related('PCVB').get(id=id)
         
         # Lấy ngày từ bản ghi PCVeBinh
-        ngay = phan_cong_chi_tiet.PCVB.Ngay
+        ngay = phan_cong_chi_tiet.PCVB.NgayCong.Ngay
         
         # Kiểm tra nếu ngày nhỏ hơn ngày hiện tại
         if ngay < date.today():
@@ -461,7 +446,7 @@ def LayTatCaCaGac():
         danh_sach_ca_gac = CaGacVBModel.CaGacVBModel.objects.filter(TrangThai=True)
         
         # Chuyển đổi QuerySet thành danh sách các bản ghi với các trường cần thiết
-        data = list(danh_sach_ca_gac.values('id', 'Ca', 'TGBatDau', 'TGKetThuc', 'TrangThai'))
+        data = list(danh_sach_ca_gac.values('id', 'Ca', 'TGBatDau', 'TGKetThuc'))
 
         return {"status": "success", "data": data}
     
@@ -482,6 +467,7 @@ def LayCaGacTrongNgayCong(id_NgayCong):
         data = []
         for ca_gac in ca_gac_list:
             data.append({
+                "id": ca_gac.id,
                 "Ca": ca_gac.Ca.Ca,
                 "TGBatDau": ca_gac.Ca.TGBatDau,
                 "TGKetThuc": ca_gac.Ca.TGKetThuc
