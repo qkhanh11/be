@@ -246,8 +246,12 @@ def tim_ten_cong(ChienSi, Ca, Ngay):
     
 
 
-def lay_ngay_theo_cong(cong_gac_id):
+def lay_ngay_theo_cong(cong_gac_id,NgayBD,NgayKT):
     try:
+        if NgayBD:
+            NgayBD = datetime.strptime(NgayBD, '%Y-%m-%d').date()
+        if NgayKT:
+            NgayKT = datetime.strptime(NgayKT, '%Y-%m-%d').date()
         # Lấy danh sách các ngày duy nhất có bản ghi với id cổng đã cho
         ngay_danh_sach = (
             PCGacNgayModel.PCGacNgayModel.objects.filter(CongGac_id=cong_gac_id)
@@ -255,6 +259,14 @@ def lay_ngay_theo_cong(cong_gac_id):
             .values('id', 'Ngay')
             .distinct()  # Loại bỏ các ngày trùng lặp
         )
+        if NgayBD:
+            NgayBD_start = datetime.combine(NgayBD, datetime.min.time())  # Bắt đầu từ 00:00:00 của ngày đó
+            ngay_danh_sach = ngay_danh_sach.filter(Ngay__gte=NgayBD_start)
+        
+        # Nếu NgayKT không None, lọc các khách có ThoiGianKetThuc đến hết ngày NgayKT
+        if NgayKT:
+            NgayKT_end = datetime.combine(NgayKT, datetime.max.time())  # Kết thúc ở 23:59:59 của ngày đó
+            ngay_danh_sach = ngay_danh_sach.filter(Ngay__lte=NgayKT_end)
         
         # Chuyển đổi QuerySet thành danh sách
         ngay_danh_sach = list(ngay_danh_sach)

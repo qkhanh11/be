@@ -106,3 +106,13 @@ def LayTenSQTuMa(request):
     
 
 
+
+@api_view(['GET'])
+def DSTiepKhachSQ(request,id):
+    NgayBD = request.GET.get('NgayBD')
+    NgayKT = request.GET.get('NgayKT')
+    result = NVSiQuan.DSTiepKhachSQ(id, NgayBD, NgayKT)
+    if result["status"] == "success":
+        return Response(result, status=status.HTTP_200_OK)
+    else:
+        return Response(result, status=status.HTTP_400_BAD_REQUEST)

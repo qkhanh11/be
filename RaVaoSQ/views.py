@@ -36,3 +36,14 @@ def lay_lich_su_ra_vao(request):
         return Response(data=result,status=status.HTTP_200_OK)
     else:
         return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['GET'])
+def LSRaVaoSQ(request,id):
+    NgayBD = request.GET.get("NgayBD")
+    NgayKT = request.GET.get("NgayKT")
+    result = NVRaVaoSQ.LSRaVaoSQ(id,NgayBD,NgayKT)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)

@@ -11,3 +11,4 @@ class KhachVienChucModel(models.Model):
     ThoiGianBatDau = models.DateTimeField()
     ThoiGianKetThuc = models.DateTimeField(null=True)
     GhiChu = models.CharField(max_length=255)
+    TraTheKhach = models.BooleanField(default=False)

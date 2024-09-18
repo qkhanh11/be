@@ -5,6 +5,7 @@ from django.utils import timezone
 from datetime import timedelta
 from be.settings import SoDoiTuongMoiTrang
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from datetime import datetime, timedelta
 
 
 
@@ -104,4 +105,36 @@ def lay_lich_su_ra_vao():
 
                      
     
-    
+def LSRaVaoSQ(id, NgayBD=None, NgayKT=None):
+    try:
+        if NgayBD:
+            NgayBD = datetime.strptime(NgayBD, '%Y-%m-%d').date()
+        if NgayKT:
+            NgayKT = datetime.strptime(NgayKT, '%Y-%m-%d').date()
+        # Truy vấn cơ bản theo id của sĩ quan
+        print(NgayBD,NgayKT)
+        ls_ravao = LSRaVaoSQModel.LSRaVaoSQModel.objects.filter(SiQuan_id=id)
+
+        if NgayBD:
+            NgayBD_start = datetime.combine(NgayBD, datetime.min.time())  # Bắt đầu từ 00:00:00 của ngày đó
+            ls_ravao = ls_ravao.filter(ThoiGian__gte=NgayBD_start)
+        
+        # Nếu NgayKT không None, lọc các khách có ThoiGianKetThuc đến hết ngày NgayKT
+        if NgayKT:
+            NgayKT_end = datetime.combine(NgayKT, datetime.max.time())  # Kết thúc ở 23:59:59 của ngày đó
+            ls_ravao = ls_ravao.filter(ThoiGian__lte=NgayKT_end)
+        result = []
+        for ravao in ls_ravao:
+            result.append({
+                'SoThe': ravao.SoThe.SoThe,  # Tên khách
+                'ngay': ravao.ThoiGian.date().strftime('%d/%m/%Y'),  # Ngày tháng năm bắt đầu
+                'thoigian': ravao.ThoiGian.time().strftime('%H:%M'),  # Giờ phút bắt đầu
+                'cong': ravao.Cong.TenCong,
+                'trangthai': "Ra" if ravao.TrangThai else "Vào"
+            })
+        
+        return {"status": "success", "data": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+

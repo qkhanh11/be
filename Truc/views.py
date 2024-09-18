@@ -185,8 +185,11 @@ def ThemPCCaGac(request):
 
 
 @api_view(['GET'])
-def lay_ngay_theo_cong(request,id):
-    result = NVTruc.lay_ngay_theo_cong(id)
+def lay_ngay_theo_cong(request,id=0):
+    NgayBD = request.GET.get('NgayBD')
+    NgayKT = request.GET.get('NgayKT')
+    result = NVTruc.lay_ngay_theo_cong(id,NgayBD,NgayKT)
+    
     if result["status"] == "success":
         return Response(data=result,status=status.HTTP_200_OK)
     else:

@@ -11,3 +11,4 @@ class KhachSiQuanModel(models.Model):
     ThoiGianBatDau = models.DateTimeField()
     ThoiGianKetThuc = models.DateTimeField(null=True)
     GhiChu = models.CharField(max_length=255,null=True)
+    TraTheKhach = models.BooleanField(default=False)

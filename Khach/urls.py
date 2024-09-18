@@ -16,6 +16,6 @@ urlpatterns = [
     path('TraKhachSQ/<int:id>',views.TraKhachSQ,name="TraKhachSQ"),
     path('DanhSachTiepKhachSiQuan/',views.DanhSachTiepKhachSiQuan,name="TraKhachSQ"),
     path('danh_sach_the_khach/',views.danh_sach_the_khach,name="danh_sach_the_khach"),
-    # path('xemlscv/<int:id>',views.LSCV,name="LichSuChucVuSQ"),
-    # path('thongtinchitiet/<int:id>',views.ThongTinChiTiet,name="ThongTinChiTietSQ"),
+    path('SuaTheKhach/<int:id>',views.SuaTheKhach,name="SuaTheKhach"),
+    path('TraTheKhach/<int:id>',views.TraTheKhach,name="TraTheKhach"),
 ]

@@ -122,5 +122,23 @@ def danh_sach_the_khach(request):
         return Response(data=result,status=status.HTTP_200_OK)
     else:
         return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
 
+@api_view(['PUT'])
+def SuaTheKhach(request,id):
+    SoThe = request.data.get('SoThe')
+    result = NVKhach.SuaTheKhach(id,SoThe)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['PUT'])
+def TraTheKhach(request,id):
+    result = NVKhach.TraTheKhach(id)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
 

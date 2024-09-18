@@ -110,7 +110,7 @@ def XoaChienSi(id):
 def TatCaChienSi():
     try:
         # Truy vấn tất cả các chiến sĩ
-        chien_si_list = ChienSiModel.ChienSiModel.objects.select_related('DonVi', 'CapBac').filter(TinhTrang=True)
+        chien_si_list = ChienSiModel.ChienSiModel.objects.filter(TinhTrang=True)
         
         # Tạo danh sách dữ liệu để trả về
         data = []

@@ -150,6 +150,7 @@ def TraKhachSQ(id):
         
         # Cập nhật ThoiGianKetThuc với thời gian hiện tại
         khach_si_quan.ThoiGianKetThuc = timezone.now() + timedelta(hours=7)
+        khach_si_quan.TraTheKhach = True
         khach_si_quan.save()
         the_khach = khach_si_quan.TheKhach
         the_khach.DangSuDung = False
@@ -217,3 +218,24 @@ def danh_sach_the_khach():
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
+    
+
+def SuaTheKhach(id,SoThe):
+    try:
+        KTthekhach = TheKhachModel.TheKhachModel.objects.filter(SoThe=SoThe,TrangThai=True).exists()
+        if KTthekhach:
+            return {"status": "error", "message": "Số thẻ khách đã tồn tại."}
+        thekhach = TheKhachModel.TheKhachModel.objects.get(pk=id)
+        thekhach.SoThe=SoThe
+        thekhach.save()
+        return {"status": "success", "message": "Thành công."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
+
+
+def TraTheKhach(id):
+    thekhach = TheKhachModel.TheKhachModel.objects.get(pk=id)
+    thekhach.DangSuDung=False
+    thekhach.save()
+    

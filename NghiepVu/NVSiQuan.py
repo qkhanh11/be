@@ -1,9 +1,10 @@
-from model import SiQuanModel, DonViModel, CVSiQuanModel, CapBacModel, NhomSQModel,SQ_DVModel,SQ_CVModel
+from model import SiQuanModel, DonViModel, CVSiQuanModel, CapBacModel, NhomSQModel,SQ_DVModel,SQ_CVModel, KhachSiQuanModel, LSRaVaoSQModel
 from django.db import transaction
 from django.utils import timezone
 from django.core.paginator import Paginator
 from django.db.models import Q
 from be.settings import SoDoiTuongMoiTrang
+from datetime import datetime, timedelta
 
 
 
@@ -247,7 +248,7 @@ def SiQuanTrongDonVi(id_DonVi,trang=1):
 def XemLichSuChucVu(id):
     try:
         # Lấy tất cả các lịch sử chức vụ của sĩ quan với id
-        lich_su_queryset = SQ_CVModel.SQ_CVModel.objects.filter(SQ_id=id).order_by('TuNgay')
+        lich_su_queryset = SQ_CVModel.SQ_CVModel.objects.filter(SQ_id=id).order_by('-id')
 
         # Tạo danh sách các kết quả
         results = []
@@ -267,7 +268,7 @@ def XemLichSuChucVu(id):
 def XemLichSuDonVi(id):
     try:
         # Lấy tất cả các lịch sử đơn vị của sĩ quan với id
-        lich_su_queryset = SQ_DVModel.SQ_DVModel.objects.filter(SQ_id=id).order_by('TuNgay')
+        lich_su_queryset = SQ_DVModel.SQ_DVModel.objects.filter(SQ_id=id).order_by('-id')
 
         # Tạo danh sách các kết quả
         results = []
@@ -301,7 +302,11 @@ def ThongTinChiTiet(id):
             "NgayNhapNgu": si_quan.NgayNhapNgu,
             "SoCanCuoc": si_quan.SoCanCuoc,
             "QueQuan": si_quan.QueQuan,
-            "NoiO": si_quan.NoiO
+            "NoiO": si_quan.NoiO,
+            "IDDonVi": si_quan.DonVi.id,
+            "IDChucVu": si_quan.ChucVu.id,
+            "IDCapBac": si_quan.CapBac.id,
+            "IDNhomSQ": si_quan.NhomSQ.id,
         }
 
         return {"status": "success", "data": data}
@@ -333,3 +338,43 @@ def LayTenSQTuMa(MaSQ):
         return {"status": "success", "HoTen": si_quan.HoTen}
     except:
         return {"status": "success", "HoTen": ""}
+    
+
+def DSTiepKhachSQ(id, NgayBD=None, NgayKT=None):
+    try:
+        if NgayBD:
+            NgayBD = datetime.strptime(NgayBD, '%Y-%m-%d').date()
+        if NgayKT:
+            NgayKT = datetime.strptime(NgayKT, '%Y-%m-%d').date()
+        # Truy vấn cơ bản theo id của sĩ quan
+        ds_khach = KhachSiQuanModel.KhachSiQuanModel.objects.filter(SiQuan_id=id)
+        
+        # Nếu NgayBD không None, lọc các khách từ NgayBD trở đi
+        if NgayBD:
+            NgayBD_start = datetime.combine(NgayBD, datetime.min.time())  # Bắt đầu từ 00:00:00 của ngày đó
+            ds_khach = ds_khach.filter(ThoiGianBatDau__gte=NgayBD_start)
+        
+        # Nếu NgayKT không None, lọc các khách có ThoiGianKetThuc đến hết ngày NgayKT
+        if NgayKT:
+            NgayKT_end = datetime.combine(NgayKT, datetime.max.time())  # Kết thúc ở 23:59:59 của ngày đó
+            ds_khach = ds_khach.filter(ThoiGianKetThuc__lte=NgayKT_end)
+        
+        # Chuẩn bị dữ liệu trả về
+        result = []
+        for khach in ds_khach:
+            result.append({
+                'Khach': khach.Khach.HoTenKhach,  # Tên khách
+                'LoaiKhach': khach.Khach.Loai.TenLoaiKhach,
+                'SoThe': khach.TheKhach.SoThe,  # Số thẻ khách
+                'NgayBatDau': khach.ThoiGianBatDau.date().strftime('%d/%m/%Y'),  # Ngày tháng năm bắt đầu
+                'GioBatDau': khach.ThoiGianBatDau.time().strftime('%H:%M'),  # Giờ phút bắt đầu
+                'NgayKetThuc': khach.ThoiGianKetThuc.date().strftime('%d/%m/%Y') if khach.ThoiGianKetThuc else None,  # Ngày tháng năm kết thúc
+                'GioKetThuc': khach.ThoiGianKetThuc.time().strftime('%H:%M') if khach.ThoiGianKetThuc else None,  # Giờ phút kết thúc
+                'GhiChu': khach.GhiChu  # Ghi chú
+            })
+        
+        return {"status": "success", "data": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+    
