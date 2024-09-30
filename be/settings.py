@@ -52,6 +52,11 @@ INSTALLED_APPS = [
     'Truc',
     'ChienSi',
     'RaVaoSQ',
+    'testword',
+    'ViPham',
+    'Quyen',
+    'QNCN',
+    'ViPhamSQ'
 ]
 
 MIDDLEWARE = [

@@ -13,10 +13,10 @@ class QNCNModel(models.Model):
     DonVi = models.ForeignKey(DonViModel,on_delete=models.PROTECT)
     ChucVu = models.ForeignKey(CVQNCNModel,on_delete=models.PROTECT)
     CapBac = models.ForeignKey(CapBacModel,on_delete=models.PROTECT)
-    NhomSQ = models.ForeignKey(NhomQNCNModel,on_delete=models.PROTECT)
+    NhomQNCN = models.ForeignKey(NhomQNCNModel,on_delete=models.PROTECT)
     NgayNhapNgu = models.DateField()
     SoCanCuoc = models.CharField(max_length=20)
     QueQuan = models.CharField(max_length=60)
     NoiO = models.CharField(max_length=60)
-    TinhTrang = models.BooleanField(default=True)
+    TrangThai = models.BooleanField(default=True)
 

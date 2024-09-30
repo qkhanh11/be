@@ -47,11 +47,11 @@ def SuaDonVi(id,TenDonVi, DiaDiem, MaDonVi, id_DonViCapTren, SoDienThoai, id_Cap
         CapNhom = CapDonViModel.CapDonViModel.objects.get(pk=id_CapDonVi)
 
         don_vi = DonViModel.DonViModel.objects.get(pk=id)
-        don_vi.TenDonVi=TenDonVi,
-        don_vi.DiaDiem=DiaDiem,
-        don_vi.MaDonVi=MaDonVi,
-        don_vi.id_DonViCapTren=DonViCapTren,  # Sử dụng đối tượng DonViCapTren trực tiếp
-        don_vi.SoDienThoai=SoDienThoai,
+        don_vi.TenDonVi=TenDonVi
+        don_vi.DiaDiem=DiaDiem
+        don_vi.MaDonVi=MaDonVi
+        don_vi.id_DonViCapTren=DonViCapTren  # Sử dụng đối tượng DonViCapTren trực tiếp
+        don_vi.SoDienThoai=SoDienThoai
         don_vi.id_CapDonVi=CapNhom  # Sử dụng đối tượng CapNhom trực tiếp
         
 

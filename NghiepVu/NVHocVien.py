@@ -53,7 +53,8 @@ def SuaHocVien(id,HoTen,NgaySinh,MaQuanNhan,DonVi,CapBac,NgayNhapNgu,SoCanCuoc,Q
 def XoaHocVien(id):
     try:
         hoc_vien = HocVienModel.HocVienModel.objects.get(pk=id)
-        hoc_vien.delete()
+        hoc_vien.TinhTrang = False
+        hoc_vien.save()
         return {"status": "success", "data": 'Xóa thành công'}
 
     except Exception as e:
@@ -62,32 +63,26 @@ def XoaHocVien(id):
     
 
 def TatCaHocVien(page=1):
-    hoc_vien_list = HocVienModel.HocVienModel.objects.values('id', 'HoTen', 'MaQuanNhan', 'CapBac__TenCapBac', 'NgaySinh', 'DonVi__TenDonVi')
-    
-
-
-    # Tạo Paginator object
-    paginator = Paginator(hoc_vien_list, SoDoiTuongMoiTrang)
-    
     try:
-        results = paginator.page(page)
-    except PageNotAnInteger:
-        results = paginator.page(1)
-    except EmptyPage:
-        results = paginator.page(paginator.num_pages)
+        # Truy vấn tất cả các chiến sĩ
+        chien_si_list = HocVienModel.HocVienModel.objects.filter(TinhTrang=True)
+        
+        # Tạo danh sách dữ liệu để trả về
+        data = []
+        for chien_si in chien_si_list:
+            data.append({
+                "id": chien_si.id,
+                "HoTen": chien_si.HoTen,
+                "Ma": chien_si.MaQuanNhan,
+                "CapBac": chien_si.CapBac.TenCapBac,
+                "TenDonVi": chien_si.DonVi.TenDonVi,
+                "QueQuan": chien_si.QueQuan
+            })
 
-    # Trả về kết quả dạng JSON
-    return {
-        "status": "success", 
-        "data": list(results),
-        "pagination": {
-            "current_page": results.number,
-            "total_pages": paginator.num_pages,
-            "total_items": paginator.count,
-            "has_next": results.has_next(),
-            "has_previous": results.has_previous(),
-        }
-    }
+        return {"status": "success", "data": data}
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 
 def TimKiemHocVien(keyword,DonVi,page=1):
@@ -181,4 +176,32 @@ def TimHVTrongDonVi(keyword,DonVi,page=1):
         }
     except Exception as e:
         # Trả về thông báo lỗi nếu có lỗi xảy ra
+        return {"status": "error", "message": str(e)}
+    
+
+def ChiTietHocVien(id):
+    try:
+        # Lấy đối tượng chiến sĩ theo ID
+        chien_si = HocVienModel.HocVienModel.objects.select_related('DonVi', 'CapBac').get(pk=id)
+        
+        # Tạo dữ liệu chi tiết của chiến sĩ
+        data = {
+            "id": chien_si.id,
+            "HoTen": chien_si.HoTen,
+            "Ma": chien_si.MaQuanNhan,
+            "NgaySinh": chien_si.NgaySinh,
+            "DonVi": chien_si.DonVi.TenDonVi,
+            "CapBac": chien_si.CapBac.TenCapBac,
+            "NgayNhapNgu": chien_si.NgayNhapNgu,
+            "SoCanCuoc": chien_si.SoCanCuoc,
+            "QueQuan": chien_si.QueQuan,
+            "NoiO": chien_si.NoiO,
+            "IDDonVi": chien_si.DonVi.id,
+            "IDCapBac": chien_si.CapBac.id
+
+        }
+
+        return {"status": "success", "data": data}
+
+    except Exception as e:
         return {"status": "error", "message": str(e)}

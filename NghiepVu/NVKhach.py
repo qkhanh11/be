@@ -1,8 +1,11 @@
-from model import LoaiKhachModel, KhachModel, TheKhachModel,KhachSiQuanModel
+from model import LoaiKhachModel, KhachModel, TheKhachModel,KhachSiQuanModel,KhachQNCNModel,KhachVienChucModel, KhachHocVienModel
 from .NVSiQuan import LaySQTuMa
 from django.utils import timezone
 from datetime import timedelta
 from django.core.paginator import Paginator
+from django.db.models import Count
+from django.db.models.functions import TruncMonth
+from datetime import datetime, timedelta
 
 
 def kiem_tra_the_co_hieu_luc(sothe):
@@ -127,17 +130,20 @@ def TiepKhachSQ(SiQuan,HoTenKhach,SoDinhDanh,Loai,TheKhach,GhiChu):
 
 def DangTiepKhachSQ():
     # Lọc các bản ghi có ThoiGianKetThuc là null và sử dụng select_related để lấy thông tin từ các mô hình liên quan
+    # Lọc các bản ghi có ThoiGianKetThuc là null và sử dụng select_related để lấy thông tin từ các mô hình liên quan
     khach_si_quan_list = KhachSiQuanModel.KhachSiQuanModel.objects.filter(ThoiGianKetThuc__isnull=True).select_related('SiQuan', 'TheKhach', 'Khach')
 
     # Chuyển QuerySet thành danh sách các dictionary chứa các trường cần thiết
-    data = list(khach_si_quan_list.values(
-        'id',
-        'SiQuan__HoTen',  # Tên sĩ quan
-        'TheKhach__SoThe',  # Số thẻ khách
-        'Khach__HoTenKhach',  # Tên khách
-        'ThoiGianBatDau',
-        'GhiChu'
-    ))
+    data = []
+    for ksq in khach_si_quan_list:
+        data.append({
+            'id': ksq.id,
+            'SiQuan__HoTen': ksq.SiQuan.HoTen,
+            'TheKhach__SoThe': ksq.TheKhach.SoThe,
+            'Khach__HoTenKhach': ksq.Khach.HoTenKhach,
+            'ThoiGianBatDau': ksq.ThoiGianBatDau.strftime('%H:%M %d-%m-%Y'),  # Định dạng ngày giờ
+            'GhiChu': ksq.GhiChu,
+        })
 
     # Trả về JsonResponse
     return {"status": "success", "data": data}
@@ -172,7 +178,7 @@ def LayLoaiKhach():
 
 def DanhSachTiepKhachSiQuan():
     try:
-        khach_si_quan_list = KhachSiQuanModel.KhachSiQuanModel.objects.values(
+        khach_si_quan_list = KhachSiQuanModel.KhachSiQuanModel.objects.all().values(
             'id',
             'SiQuan__id',  # ID của sĩ quan
             'SiQuan__HoTen',  # Tên của sĩ quan
@@ -199,7 +205,7 @@ def danh_sach_the_khach():
     # Lấy tất cả các thẻ khách
     try:
         # Lấy tất cả các thẻ khách
-        danh_sach_the = TheKhachModel.TheKhachModel.objects.all()
+        danh_sach_the = TheKhachModel.TheKhachModel.objects.all().order_by("-TrangThai")
 
         # Chuyển đổi QuerySet thành danh sách với các trạng thái được cập nhật
         data = []
@@ -239,3 +245,320 @@ def TraTheKhach(id):
     thekhach.DangSuDung=False
     thekhach.save()
     
+
+def ThongKeKhachTrongNgay():
+    today = (timezone.now() + timedelta(hours=7)).date()
+    start_of_day = timezone.make_aware(timezone.datetime.combine(today, timezone.datetime.min.time()))
+    end_of_day = timezone.make_aware(timezone.datetime.combine(today, timezone.datetime.max.time()))
+    
+    sq = KhachSiQuanModel.KhachSiQuanModel.objects.filter(
+        ThoiGianBatDau__gte=start_of_day,
+        ThoiGianBatDau__lte=end_of_day
+    ).aggregate(total_khach=Count('id'))["total_khach"]
+
+
+    qncn = KhachQNCNModel.KhachQNCNModel.objects.filter(
+        ThoiGianBatDau__gte=start_of_day,
+        ThoiGianBatDau__lte=end_of_day
+    ).aggregate(total_khach=Count('id'))["total_khach"]
+
+
+    vc = KhachVienChucModel.KhachVienChucModel.objects.filter(
+        ThoiGianBatDau__gte=start_of_day,
+        ThoiGianBatDau__lte=end_of_day
+    ).aggregate(total_khach=Count('id'))["total_khach"]
+
+
+    hv = KhachHocVienModel.KhachHocVienModel.objects.filter(
+        ThoiGianBatDau__gte=start_of_day,
+        ThoiGianBatDau__lte=end_of_day
+    ).aggregate(total_khach=Count('id'))["total_khach"]
+
+
+    tong = sq + qncn + vc + hv
+
+    data ={
+        'KhachSQ': sq,
+        'KhachQNCN': qncn,
+        'KhachVC': vc,
+        'KhachHV': hv,
+        'Tong': tong
+    }
+    return {"status": "success", "data": data}
+
+
+def ThongKeTrongThang():
+    now = (timezone.now() + timedelta(hours=7))
+    start_of_month = now.replace(day=1)
+
+    # Lấy ngày đầu của tháng tiếp theo, rồi trừ đi một giây để có ngày cuối tháng hiện tại
+    if now.month == 12:
+        end_of_month = now.replace(year=now.year + 1, month=1, day=1) - timedelta(seconds=1)
+    else:
+        end_of_month = now.replace(month=now.month + 1, day=1) - timedelta(seconds=1)
+
+    sq = KhachSiQuanModel.KhachSiQuanModel.objects.filter(
+        ThoiGianBatDau__gte=start_of_month,
+        ThoiGianBatDau__lte=end_of_month
+    ).aggregate(total_khach=Count('id'))["total_khach"]
+
+    qncn = KhachQNCNModel.KhachQNCNModel.objects.filter(
+        ThoiGianBatDau__gte=start_of_month,
+        ThoiGianBatDau__lte=end_of_month
+    ).aggregate(total_khach=Count('id'))["total_khach"]
+
+    vc = KhachVienChucModel.KhachVienChucModel.objects.filter(
+        ThoiGianBatDau__gte=start_of_month,
+        ThoiGianBatDau__lte=end_of_month
+    ).aggregate(total_khach=Count('id'))["total_khach"]
+
+    hv = KhachHocVienModel.KhachHocVienModel.objects.filter(
+        ThoiGianBatDau__gte=start_of_month,
+        ThoiGianBatDau__lte=end_of_month
+    ).aggregate(total_khach=Count('id'))["total_khach"]
+
+    tong = sq + qncn + vc + hv
+
+    data ={
+        'KhachSQ': sq,
+        'KhachQNCN': qncn,
+        'KhachVC': vc,
+        'KhachHV': hv,
+        'Tong': tong
+    }
+    return {"status": "success", "data": data}
+
+
+
+def ThongKeTheoNam(nam):
+    current_year  = nam
+
+
+    thong_ke_theo_thang_sq = KhachSiQuanModel.KhachSiQuanModel.objects.filter(
+        ThoiGianBatDau__year=current_year
+    ).annotate(
+        thang=TruncMonth('ThoiGianBatDau')
+    ).values(
+        'thang'
+    ).annotate(
+        total_khach=Count('id')
+    ).order_by('thang')
+
+
+    thong_ke_theo_thang_qncn = KhachQNCNModel.KhachQNCNModel.objects.filter(
+        ThoiGianBatDau__year=current_year
+    ).annotate(
+        thang=TruncMonth('ThoiGianBatDau')
+    ).values(
+        'thang'
+    ).annotate(
+        total_khach=Count('id')
+    ).order_by('thang')
+
+
+    thong_ke_theo_thang_vc = KhachVienChucModel.KhachVienChucModel.objects.filter(
+        ThoiGianBatDau__year=current_year
+    ).annotate(
+        thang=TruncMonth('ThoiGianBatDau')
+    ).values(
+        'thang'
+    ).annotate(
+        total_khach=Count('id')
+    ).order_by('thang')
+
+
+    thong_ke_theo_thang_hv = KhachHocVienModel.KhachHocVienModel.objects.filter(
+        ThoiGianBatDau__year=current_year
+    ).annotate(
+        thang=TruncMonth('ThoiGianBatDau')
+    ).values(
+        'thang'
+    ).annotate(
+        total_khach=Count('id')
+    ).order_by('thang')
+
+    # Tạo từ điển với tất cả các tháng từ thang1 đến thang12 có giá trị mặc định là 0
+    ket_qua = {f'thang{i}': 0 for i in range(1, 13)}
+
+    # Duyệt qua kết quả truy vấn và cập nhật số lượng khách vào từ điển
+    ket_qua = {f'thang{i}': 0 for i in range(1, 13)}
+
+    # Hàm hỗ trợ cập nhật số lượng khách cho từ điển kết quả
+    def cap_nhat_ket_qua(thong_ke_theo_thang):
+        for item in thong_ke_theo_thang:
+            thang_so = item['thang'].month  # Lấy số tháng từ đối tượng 'thang'
+            ket_qua[f'thang{thang_so}'] += item['total_khach']  # Cộng dồn số khách
+
+    # Cập nhật kết quả từ các truy vấn
+    cap_nhat_ket_qua(thong_ke_theo_thang_sq)
+    cap_nhat_ket_qua(thong_ke_theo_thang_qncn)
+    cap_nhat_ket_qua(thong_ke_theo_thang_vc)
+    cap_nhat_ket_qua(thong_ke_theo_thang_hv)
+
+    return {"status": "success", "data": ket_qua}
+
+
+def SuaTiepKhachSQ(id,SiQuan,HoTenKhach,SoDinhDanh,Loai,TheKhach,NgayBD, GioBD,NgayKT,GioKT,GhiChu,TraThe):
+    try:
+        tiepkhach = KhachSiQuanModel.KhachSiQuanModel.objects.get(pk=id)
+        if tiepkhach.Khach.SoDinhDanh == SoDinhDanh and tiepkhach.Khach.Loai.id == Loai:
+            tiepkhach.Khach.HoTenKhach = HoTenKhach
+            tiepkhach.Khach.save()
+            khach = tiepkhach.Khach
+        else:
+            khach = ThemKhach(HoTenKhach, SoDinhDanh, Loai)
+        SQ = LaySQTuMa(SiQuan)
+        if not SQ:
+            return {"status": "error", "message": "Không tồn tại mã quân nhân"}
+
+        # Lấy thông tin thẻ khách
+        thekhach = TheKhachModel.TheKhachModel.objects.get(pk=TheKhach)
+        tiepkhach.TheKhach.DangSuDung=False
+        tiepkhach.TheKhach.save()
+        # Cộng thêm 7 giờ vào giờ bắt đầu và giờ kết thúc nếu cần
+        # Chuyển đổi NgayBD, GioBD, NgayKT, GioKT thành datetime object
+        TGBD = datetime.strptime(f"{NgayBD} {GioBD}", '%Y-%m-%d %H:%M') 
+        TGKT = datetime.strptime(f"{NgayKT} {GioKT}", '%Y-%m-%d %H:%M') if NgayKT and GioKT else None
+
+        # Cập nhật thông tin của tiepkhach
+        tiepkhach.SiQuan = SQ
+        tiepkhach.TheKhach = thekhach
+        tiepkhach.Khach = khach
+        tiepkhach.ThoiGianBatDau = TGBD
+        tiepkhach.ThoiGianKetThuc = TGKT
+        tiepkhach.GhiChu = GhiChu
+        tiepkhach.TraTheKhach = TraThe
+        tiepkhach.save()
+        
+        # Cập nhật trạng thái thẻ khách
+        thekhach.DangSuDung = not TraThe
+        thekhach.save()
+
+        return {"status": "success", "data": "Cập nhật thành công"}
+    except KhachSiQuanModel.KhachSiQuanModel.DoesNotExist:
+        return {"status": "error", "message": "Không tìm thấy bản ghi."}
+    except TheKhachModel.TheKhachModel.DoesNotExist:
+        return {"status": "error", "message": "Không tìm thấy thẻ khách."}
+    except Exception as e:
+        # Xử lý lỗi khác nếu có
+        return {"status": "error", "message": str(e)}
+    
+
+def ThemLSTiepKhachSQ(SiQuan,HoTenKhach,SoDinhDanh,Loai,TheKhach,NgayBD, GioBD,NgayKT,GioKT,GhiChu,TraThe):
+    try:
+        # Lấy sĩ quan theo mã
+        SQ = LaySQTuMa(SiQuan)
+        if not SQ:
+            return {"status": "error", "message": "Không tồn tại mã quân nhân"}
+
+        # Kiểm tra xem khách đã tồn tại chưa
+        khach = ThemKhach(HoTenKhach, SoDinhDanh, Loai)
+        
+        # Lấy thông tin thẻ khách
+        thekhach = TheKhachModel.TheKhachModel.objects.get(pk=TheKhach)
+
+        # Xử lý thời gian bắt đầu và kết thúc
+        TGBD = datetime.strptime(f"{NgayBD} {GioBD}", '%Y-%m-%d %H:%M')
+        TGKT = datetime.strptime(f"{NgayKT} {GioKT}", '%Y-%m-%d %H:%M') if NgayKT and GioKT else None
+
+        # Tạo bản ghi KhachSiQuanModel mới
+        tiepkhach = KhachSiQuanModel.KhachSiQuanModel.objects.create(
+            SiQuan=SQ,
+            TheKhach=thekhach,
+            Khach=khach,
+            ThoiGianBatDau=TGBD,
+            ThoiGianKetThuc=TGKT,
+            GhiChu=GhiChu,
+            TraTheKhach=TraThe
+        )
+
+        # Cập nhật trạng thái của thẻ khách
+        thekhach.DangSuDung = not TraThe
+        thekhach.save()
+
+        return {"status": "success", "message": "Thêm lịch sử tiếp khách thành công."}
+    
+    except TheKhachModel.TheKhachModel.DoesNotExist:
+        return {"status": "error", "message": "Không tìm thấy thẻ khách."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
+
+def TraTheKhachSQ(id):
+    try:
+        # Lấy bản ghi lịch sử tiếp khách dựa trên id
+        tiepkhach = KhachSiQuanModel.KhachSiQuanModel.objects.get(pk=id)
+
+        # Kiểm tra nếu thẻ đã được trả chưa
+        if tiepkhach.TraTheKhach:
+            return {"status": "error", "message": "Thẻ khách đã được trả trước đó."}
+
+        # Cập nhật trạng thái thẻ khách
+        tiepkhach.TraTheKhach = True
+        tiepkhach.ThoiGianKetThuc = timezone.now()  # Cập nhật thời gian trả thẻ
+        tiepkhach.save()
+
+        # Cập nhật trạng thái của thẻ khách
+        thekhach = tiepkhach.TheKhach
+        thekhach.DangSuDung = False  # Thẻ khách không còn sử dụng
+        thekhach.save()
+
+        return {"status": "success", "message": "Trả thẻ khách thành công."}
+    
+    except KhachSiQuanModel.KhachSiQuanModel.DoesNotExist:
+        return {"status": "error", "message": "Không tìm thấy lịch sử tiếp khách."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
+
+def DaTraKhachSQ():
+    khach_si_quan_list = KhachSiQuanModel.KhachSiQuanModel.objects.filter(ThoiGianKetThuc__isnull=False).select_related('SiQuan', 'TheKhach', 'Khach').order_by("-ThoiGianKetThuc")
+
+    # Chuyển QuerySet thành danh sách các dictionary chứa các trường cần thiết
+    data = []
+    for ksq in khach_si_quan_list:
+        data.append({
+            'id': ksq.id,
+            'SiQuan__HoTen': ksq.SiQuan.HoTen,
+            'TheKhach__SoThe': ksq.TheKhach.SoThe,
+            'Khach__HoTenKhach': ksq.Khach.HoTenKhach,
+            'ThoiGianBatDau': ksq.ThoiGianBatDau.strftime('%H:%M %d-%m-%Y'),  # Định dạng ngày giờ
+            'ThoiGianKetThuc': ksq.ThoiGianKetThuc.strftime('%H:%M %d-%m-%Y'),
+            'GhiChu': ksq.GhiChu,
+            'DaTraThe': ksq.TraTheKhach
+        })
+
+    # Trả về JsonResponse
+    return {"status": "success", "data": data}
+
+
+def ChiTietTiepKhachSQ(id):
+    try:
+        # Lấy bản ghi lịch sử tiếp khách dựa trên id
+        tiepkhach = KhachSiQuanModel.KhachSiQuanModel.objects.select_related('SiQuan', 'Khach', 'TheKhach').get(pk=id)
+
+        # Tạo dictionary chứa thông tin chi tiết
+        data = {
+            'id': tiepkhach.id,
+            'SiQuan': tiepkhach.SiQuan.MaQuanNhan,
+            'HoTenSQ': tiepkhach.SiQuan.HoTen,
+            'HoTenKhach': tiepkhach.Khach.HoTenKhach,
+            'SoDinhDanh': tiepkhach.Khach.SoDinhDanh,
+            'Loai': tiepkhach.Khach.Loai.id,
+            'TenLoai': tiepkhach.Khach.Loai.TenLoaiKhach,
+            'SoTheKhach': tiepkhach.TheKhach.SoThe,
+            'TheKhach': tiepkhach.TheKhach.id,  # Số thẻ khách
+            'NgayBD': tiepkhach.ThoiGianBatDau.date(),
+            'GioBD': f"{tiepkhach.ThoiGianBatDau.time().hour}:{tiepkhach.ThoiGianBatDau.time().minute}",
+            'NgayKT': tiepkhach.ThoiGianKetThuc.date() if tiepkhach.ThoiGianKetThuc else None,
+            'GioKT': f"{tiepkhach.ThoiGianKetThuc.time().hour}:{tiepkhach.ThoiGianKetThuc.time().minute}" if tiepkhach.ThoiGianKetThuc else None,
+            'GhiChu': tiepkhach.GhiChu,
+            'TraTheKhach': tiepkhach.TraTheKhach
+        }
+
+        return {"status": "success", "data": data}
+    
+    except KhachSiQuanModel.KhachSiQuanModel.DoesNotExist:
+        return {"status": "error", "message": "Không tìm thấy lịch sử tiếp khách."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}

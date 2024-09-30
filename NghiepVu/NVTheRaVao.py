@@ -1,4 +1,4 @@
-from model import TheSiQuanModel,TheQNCNModel,TheSiQuanNamModel,TheQNCNNamModel,TheVienChucModel,TheVienChucNamModel, SiQuanModel,QNCNModel,VienChucQPModel,NhomSQModel
+from model import TheSiQuanModel,TheQNCNModel,TheSiQuanNamModel,TheQNCNNamModel,TheVienChucModel,TheVienChucNamModel, SiQuanModel,QNCNModel,VienChucQPModel,NhomSQModel,NhomQNCNModel
 
 
 def ThemTheSQ(SoThe, SiQuan):
@@ -237,3 +237,32 @@ def TenSQTuThe(sothe):
     except:
         return {"status": "success", "message": ""}
 
+
+def The_NhomQNCN(sothe):
+    try:
+        # Tìm thẻ sĩ quan với số thẻ đã cho
+        the = TheQNCNModel.TheQNCNModel.objects.filter(SoThe=sothe,TrangThai=True).first()
+
+        # Kiểm tra xem thẻ có tồn tại không
+        if not the:
+            return {"status": "error", "message": "Không tìm thấy thẻ với số thẻ này."}
+ 
+        # Lấy thông tin sĩ quan liên kết với thẻ
+        qncn = the.QNCN
+
+        # Lấy thông tin NhomSQ của sĩ quan
+        nhom_sq = NhomQNCNModel.NhomQNCNModel.objects.get(pk=qncn.NhomQNCN.id)
+        return int(nhom_sq.id)
+
+    except AttributeError:
+        return {"status": "error", "message": "Không tìm thấy thông tin nhóm sĩ quan."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
+def TenQNCNTuThe(sothe):
+    try:
+        thesq=TheQNCNModel.TheQNCNModel.objects.get(SoThe=sothe,TrangThai=True)
+        QNCN=thesq.QNCN
+        return {"status": "success", "message": QNCN.HoTen}
+    except:
+        return {"status": "success", "message": ""}

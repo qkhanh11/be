@@ -35,6 +35,7 @@ def SuaHocVien(request,id):
     SoCanCuoc = request.data.get('SoCanCuoc')
     QueQuan = request.data.get('QueQuan')
     NoiO = request.data.get('NoiO')
+    print(id,HoTen,NgaySinh,MaQuanNhan,DonVi,CapBac,NgayNhapNgu,SoCanCuoc,QueQuan,NoiO)
     result = NVHocVien.SuaHocVien(id,HoTen,NgaySinh,MaQuanNhan,DonVi,CapBac,NgayNhapNgu,SoCanCuoc,QueQuan,NoiO)
     if result["status"] == "success":
         return Response(result, status=status.HTTP_200_OK)
@@ -80,6 +81,15 @@ def TimHVTrongDonVi(request):
     DonVi = request.GET.get('DonVi')
     page = request.GET.get('page')
     result = NVHocVien.TimHVTrongDonVi(keyword,DonVi,page)
+    if result["status"] == "success":
+        return Response(result, status=status.HTTP_200_OK)
+    else:
+        return Response(result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['GET'])
+def ChiTietHocVien(request,id):
+    result = NVHocVien.ChiTietHocVien(id)
     if result["status"] == "success":
         return Response(result, status=status.HTTP_200_OK)
     else:

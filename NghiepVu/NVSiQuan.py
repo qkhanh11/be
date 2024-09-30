@@ -189,7 +189,7 @@ def TimSiQuan(TimKiem, TenDV, trang=1):
 
         # Tạo danh sách các kết quả
         results = []
-        for si_quan in trang_hien_tai:
+        for si_quan in si_quan_queryset:
             results.append({
                 "id": si_quan.id,
                 "HoTen": si_quan.HoTen,

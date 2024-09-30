@@ -146,7 +146,9 @@ def ChiTietChienSi(id):
             "NgayNhapNgu": chien_si.NgayNhapNgu,
             "SoCanCuoc": chien_si.SoCanCuoc,
             "QueQuan": chien_si.QueQuan,
-            "NoiO": chien_si.NoiO
+            "NoiO": chien_si.NoiO,
+            "IDDonVi": chien_si.DonVi.id
+
         }
 
         return {"status": "success", "data": data}

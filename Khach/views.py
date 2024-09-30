@@ -142,3 +142,101 @@ def TraTheKhach(request,id):
     else:
         return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['GET'])
+def ThongKeTrongThang(request):
+    result = NVKhach.ThongKeTrongThang()
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def ThongKeKhachTrongNgay(request):
+    result = NVKhach.ThongKeKhachTrongNgay()
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['GET'])
+def ThongKeTheoNam(request):
+    nam = request.GET.get('nam')
+    result = NVKhach.ThongKeTheoNam(nam)
+    # if result["status"] == "success":
+    #     return Response(data=result,status=status.HTTP_200_OK)
+    # else:
+    #     return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    return Response(data=result,status=status.HTTP_200_OK)
+
+
+
+@api_view(['PUT'])
+def SuaTiepKhachSQ(request,id):
+    SiQuan = request.data.get('SiQuan')
+    HoTenKhach = request.data.get('HoTenKhach')
+    SoDinhDanh = request.data.get('SoDinhDanh')
+    Loai = request.data.get('Loai')
+    NgayBD = request.data.get('NgayBD')
+    GioBD = request.data.get('GioBD')
+    NgayKT = request.data.get('NgayKT')
+    GioKT = request.data.get('GioKT')
+    GhiChu = request.data.get('GhiChu')
+    TraThe = request.data.get('TraTheKhach')
+    TheKhach = request.data.get('TheKhach')
+    result = NVKhach.SuaTiepKhachSQ(id,SiQuan,HoTenKhach,SoDinhDanh,Loai,TheKhach,NgayBD, GioBD,NgayKT,GioKT,GhiChu,TraThe)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def ThemLSTiepKhachSQ(request):
+    SiQuan = request.data.get('SiQuan')
+    HoTenKhach = request.data.get('HoTenKhach')
+    SoDinhDanh = request.data.get('SoDinhDanh')
+    Loai = request.data.get('Loai')
+    NgayBD = request.data.get('NgayBD')
+    GioBD = request.data.get('GioBD')
+    NgayKT = request.data.get('NgayKT')
+    GioKT = request.data.get('GioKT')
+    GhiChu = request.data.get('GhiChu')
+    TraThe = request.data.get('TraTheKhach')
+    TheKhach = request.data.get('TheKhach')
+    print(NgayBD,NgayKT,GioBD,GioKT)
+    result = NVKhach.ThemLSTiepKhachSQ(SiQuan,HoTenKhach,SoDinhDanh,Loai,TheKhach,NgayBD, GioBD,NgayKT,GioKT,GhiChu,TraThe)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['PUT'])
+def TraTheKhachSQ(request,id):
+    result = NVKhach.TraTheKhachSQ(id)    # if result["status"] == "success":
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def DaTraKhachSQ(request):
+    result = NVKhach.DaTraKhachSQ()    # if result["status"] == "success":
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['GET'])
+def ChiTietTiepKhachSQ(request,id):
+    result = NVKhach.ChiTietTiepKhachSQ(id)    # if result["status"] == "success":
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)

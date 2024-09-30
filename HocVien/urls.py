@@ -10,7 +10,7 @@ urlpatterns = [
     path('TatCaHocVien/',views.TatCaHocVien,name="TatCaHocVien"),
     path('TimHocVien/',views.TimHocVien,name="TimHocVien"),
     path('TimHVTrongDonVi/',views.TimHVTrongDonVi,name="TimHVTrongDonVi"),
-    # path('xemlsdv/<int:id>',views.LSDV,name="LichSuDonViSQ"),
+    path('ChiTietHocVien/<int:id>',views.ChiTietHocVien,name="ChiTietHocVien"),
     # path('xemlscv/<int:id>',views.LSCV,name="LichSuChucVuSQ"),
     # path('thongtinchitiet/<int:id>',views.ThongTinChiTiet,name="ThongTinChiTietSQ"),
 ]
