@@ -97,7 +97,7 @@ def ThongTinChiTiet(request,id):
 
 @api_view(['GET'])
 def  LayTenQNCNTuMa(request):
-    MaSQ = request.GET.get('MaSQ')
+    MaSQ = request.GET.get('MaQNCN')
     result = NVQNCN.LayTenQNCNTuMa(MaSQ)
     if result["status"] == "success":
         return Response(result, status=status.HTTP_200_OK)

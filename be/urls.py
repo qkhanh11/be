@@ -36,4 +36,11 @@ urlpatterns = [
     path('api/Quyen/',include('Quyen.urls')),
     path('api/QNCN/',include('QNCN.urls')),
     path('api/ViPhamSQ/',include('ViPhamSQ.urls')),
+    path('api/RaVaoQNCN/',include('RaVaoQNCN.urls')),
+    path('api/RaVaoVC/',include('RaVaoVC.urls')),
+    path('api/VienChuc/',include('VCQP.urls')),
+    path('api/KhachHV/',include('KhachHV.urls')),
+    path('api/ViPhamQNCN/',include('ViPhamQNCN.urls')),
+    path('api/ViPhamVC/',include('ViPhamVC.urls')),
+    path('api/ViPhamHV/',include('ViPhamHV.urls')),
 ]

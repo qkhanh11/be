@@ -11,6 +11,6 @@ urlpatterns = [
     path('xemlsdv/<int:id>',views.LSDV,name="LichSuDonViSQ"),
     path('xemlscv/<int:id>',views.LSCV,name="LichSuChucVuSQ"),
     path('thongtinchitiet/<int:id>',views.ThongTinChiTiet,name="ThongTinChiTietSQ"),
-    path('LayTenSQTuMa/',views.LayTenQNCNTuMa,name="LayTenSQTuMa"),
-    path('DSTiepKhachSQ/<int:id>',views.DSTiepKhachQNCN,name="DSTiepKhachSQ"),
+    path('LayTenQNCNTuMa/',views.LayTenQNCNTuMa,name="LayTenSQTuMa"),
+    path('DSTiepKhachQNCN/<int:id>',views.DSTiepKhachQNCN,name="DSTiepKhachSQ"),
 ]

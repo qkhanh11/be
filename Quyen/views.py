@@ -87,3 +87,125 @@ def ChiTietThoiGianQuyen(request,id):
         return Response(data=result,status=status.HTTP_200_OK)
     else:
         return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['GET'])
+def QuyenNhomSQ(request,id):
+    result = NVQuyen.QuyenNhomSQ(id)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def ThemQuyenNhomSQ(request):
+    id_nhomsq = request.data.get("id_nhomsq")
+    id_quyen = request.data.get("id_quyen")
+    result = NVQuyen.ThemQuyenNhomSQ(id_nhomsq,id_quyen)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['PUT'])
+def SuaQuyenNhomSQ(request,id):
+    id_quyen = request.data.get("id_quyen")
+    result = NVQuyen.SuaQuyenNhomSQ(id,id_quyen)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['DELETE'])
+def XoaQuyenNhomSQ(request,id):
+    result = NVQuyen.XoaQuyenNhomSQ(id)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+## Nhóm QNCN
+
+@api_view(['GET'])
+def QuyenNhomQNCN(request,id):
+    result = NVQuyen.QuyenNhomQNCN(id)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def ThemQuyenNhomQNCN(request):
+    id_nhomQNCN = request.data.get("id_nhomQNCN")
+    id_quyen = request.data.get("id_quyen")
+    result = NVQuyen.ThemQuyenNhomQNCN(id_nhomQNCN,id_quyen)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['PUT'])
+def SuaQuyenNhomQNCN(request,id):
+    id_quyen = request.data.get("id_quyen")
+    result = NVQuyen.SuaQuyenNhomQNCN(id,id_quyen)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['DELETE'])
+def XoaQuyenNhomQNCN(request,id):
+    result = NVQuyen.XoaQuyenNhomQNCN(id)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+## Nhóm VC
+
+@api_view(['GET'])
+def QuyenNhomVC(request,id):
+    result = NVQuyen.QuyenNhomVC(id)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def ThemQuyenNhomVC(request):
+    id_nhomVC = request.data.get("id_nhomVC")
+    id_quyen = request.data.get("id_quyen")
+    result = NVQuyen.ThemQuyenNhomVC(id_nhomVC,id_quyen)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['PUT'])
+def SuaQuyenNhomVC(request,id):
+    id_quyen = request.data.get("id_quyen")
+    result = NVQuyen.SuaQuyenNhomVC(id,id_quyen)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['DELETE'])
+def XoaQuyenNhomVC(request,id):
+    result = NVQuyen.XoaQuyenNhomVC(id)
+    if result["status"] == "success":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)

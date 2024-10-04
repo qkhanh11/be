@@ -72,3 +72,5 @@ admin.site.register(TheSiQuanModel)
 admin.site.register(TheSiQuanNamModel)
 admin.site.register(LSRaVaoSQModel)
 admin.site.register(SiQuanModel)
+admin.site.register(CVSiQuanModel)
+

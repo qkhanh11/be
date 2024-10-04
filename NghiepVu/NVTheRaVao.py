@@ -1,4 +1,4 @@
-from model import TheSiQuanModel,TheQNCNModel,TheSiQuanNamModel,TheQNCNNamModel,TheVienChucModel,TheVienChucNamModel, SiQuanModel,QNCNModel,VienChucQPModel,NhomSQModel,NhomQNCNModel
+from model import TheSiQuanModel,TheQNCNModel,TheSiQuanNamModel,TheQNCNNamModel,TheVienChucModel,TheVienChucNamModel, SiQuanModel,QNCNModel,VienChucQPModel,NhomSQModel,NhomQNCNModel, NhomVCQPModel
 
 
 def ThemTheSQ(SoThe, SiQuan):
@@ -44,7 +44,7 @@ def ThemTheVC(SoThe, VC):
         the_vc = TheVienChucModel.TheVienChucModel(SoThe=SoThe, VienChuc=vien_chuc)
         the_vc.save()
         
-        return {"status": "success", "message": "Thẻ sĩ quan đã được thêm thành công"}
+        return {"status": "success", "message": "Thẻ viên chức quốc phòng đã được thêm thành công"}
     
     except SiQuanModel.SiQuanModel.DoesNotExist:
         return {"status": "error", "message": "Sĩ quan với id này không tồn tại"}
@@ -80,13 +80,24 @@ def KTTheSQ(siquan_id):
 
 def KTTheQNCN(qncn_id):
     try:
+        # Lấy đối tượng sĩ quan với id cụ thể
         qncn = QNCNModel.QNCNModel.objects.get(id=qncn_id)
         
-        # Kiểm tra xem sĩ quan đã có thẻ kích hoạt hay chưa
-        has_active_card = TheQNCNModel.TheQNCNModel.objects.filter(QNCN=qncn, TrangThai=True).exists()
+        # Tìm kiếm thẻ sĩ quan kích hoạt
+        the_siquan = TheQNCNModel.TheQNCNModel.objects.filter(QNCN=qncn, TrangThai=True).first()
         
-        return has_active_card
+        # Nếu tìm thấy thẻ, trả về thông tin thẻ
+        if the_siquan:
+            return {
+                "id": the_siquan.id,
+                "SoThe": the_siquan.SoThe
+            }
+        # Nếu không tìm thấy thẻ, trả về False
+        else:
+            return False
     
+    except SiQuanModel.SiQuanModel.DoesNotExist:
+        return {"status": "error", "message": "Không tìm thấy quân nhân chuyên nghiệp với id này."}
     except Exception as e:
         return {"status": "error", "message": str(e)}
     
@@ -96,9 +107,17 @@ def KTTheVC(vc_id):
         vien_chuc = VienChucQPModel.VienChucQPModel.objects.get(id=vc_id)
         
         # Kiểm tra xem sĩ quan đã có thẻ kích hoạt hay chưa
-        has_active_card = TheVienChucModel.TheVienChucModel.objects.filter(VienChuc=vien_chuc, TrangThai=True).exists()
+        the_siquan = TheVienChucModel.TheVienChucModel.objects.filter(VienChuc=vien_chuc, TrangThai=True).first()
         
-        return has_active_card
+        # Nếu tìm thấy thẻ, trả về thông tin thẻ
+        if the_siquan:
+            return {
+                "id": the_siquan.id,
+                "SoThe": the_siquan.SoThe
+            }
+        # Nếu không tìm thấy thẻ, trả về False
+        else:
+            return False
     
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -263,6 +282,37 @@ def TenQNCNTuThe(sothe):
     try:
         thesq=TheQNCNModel.TheQNCNModel.objects.get(SoThe=sothe,TrangThai=True)
         QNCN=thesq.QNCN
+        return {"status": "success", "message": QNCN.HoTen}
+    except:
+        return {"status": "success", "message": ""}
+    
+
+
+def The_NhomVC(sothe):
+    try:
+        # Tìm thẻ sĩ quan với số thẻ đã cho
+        the = TheVienChucModel.TheVienChucModel.objects.filter(SoThe=sothe,TrangThai=True).first()
+
+        # Kiểm tra xem thẻ có tồn tại không
+        if not the:
+            return {"status": "error", "message": "Không tìm thấy thẻ với số thẻ này."}
+ 
+        # Lấy thông tin sĩ quan liên kết với thẻ
+        vc = the.VienChuc
+
+        # Lấy thông tin NhomSQ của sĩ quan
+        nhom_sq = NhomVCQPModel.NhomVCQPModel.objects.get(pk=vc.NhomVCQP.id)
+        return int(nhom_sq.id)
+
+    except AttributeError:
+        return {"status": "error", "message": "Không tìm thấy thông tin nhóm sĩ quan."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
+def TenQNCNTuThe(sothe):
+    try:
+        thesq=TheVienChucModel.TheVienChucModel.objects.get(SoThe=sothe,TrangThai=True)
+        QNCN=thesq.VienChuc
         return {"status": "success", "message": QNCN.HoTen}
     except:
         return {"status": "success", "message": ""}

@@ -1,4 +1,4 @@
-from model import SiQuanModel, DonViModel, CVSiQuanModel, CapBacModel, NhomSQModel,SQ_DVModel,SQ_CVModel, KhachSiQuanModel, LSRaVaoSQModel, QNCNModel, CVQNCNModel, NhomQNCNModel, QNCN_CVModel, QNCN_DVModel, KhachQNCNModel, LSRaVaoQNCNModel
+from model import  DonViModel,  CapBacModel, QNCNModel, CVQNCNModel, NhomQNCNModel, QNCN_CVModel, QNCN_DVModel, KhachQNCNModel, LSRaVaoQNCNModel
 from django.db import transaction
 from django.utils import timezone
 from django.core.paginator import Paginator
@@ -67,7 +67,7 @@ def ThemQNCN(HoTen, NgaySinh, MaQuanNhan, DonVi_id, ChucVu_id, CapBac_id, NhomSQ
         ChucVu = CVQNCNModel.CVQNCNModel.objects.get(pk=ChucVu_id)
         CapBac = CapBacModel.CapBacModel.objects.get(pk=CapBac_id)
         NhomQNCN = NhomQNCNModel.NhomQNCNModel.objects.get(pk=NhomSQ_id)
-        if SiQuanModel.SiQuanModel.objects.filter(MaQuanNhan=MaQuanNhan).exists():
+        if QNCNModel.QNCNModel.objects.filter(MaQuanNhan=MaQuanNhan).exists():
             return {"status": "error", "message": "Mã quân nhân đã tồn tại"}
 
 
@@ -155,7 +155,7 @@ def SuaQNCN(id, HoTen, NgaySinh, MaQuanNhan, DonVi_id, ChucVu_id, CapBac_id, Nho
 def XoaQNCN(id):
     try:
         # Lấy đối tượng dựa trên khóa chính (id)
-        QNCN = SiQuanModel.SiQuanModel.objects.get(pk=id)
+        QNCN = QNCNModel.QNCNModel.objects.get(pk=id)
         
         # Xóa đối tượng khỏi cơ sở dữ liệu
         QNCN.TrangThai=False
@@ -213,36 +213,36 @@ def TimQNCN(TimKiem, TenDV, trang=1):
         return {"status": "error", "message": str(e)}
         
 
-def SiQuanTrongDonVi(id_DonVi,trang=1):
-    try:
-        # Lấy tất cả các sĩ quan thuộc đơn vị với id_DonVi
-        si_quan_queryset = SiQuanModel.SiQuanModel.objects.filter(DonVi_id=id_DonVi,TrangThai=True)
+# def SiQuanTrongDonVi(id_DonVi,trang=1):
+#     try:
+#         # Lấy tất cả các sĩ quan thuộc đơn vị với id_DonVi
+#         si_quan_queryset = SiQuanModel.SiQuanModel.objects.filter(DonVi_id=id_DonVi,TrangThai=True)
 
-        # Phân trang
-        paginator = Paginator(si_quan_queryset, SoDoiTuongMoiTrang)  # Tạo đối tượng Paginator
-        trang_hien_tai = paginator.get_page(trang)  # Lấy trang hiện tại
+#         # Phân trang
+#         paginator = Paginator(si_quan_queryset, SoDoiTuongMoiTrang)  # Tạo đối tượng Paginator
+#         trang_hien_tai = paginator.get_page(trang)  # Lấy trang hiện tại
 
-        # Tạo danh sách các kết quả
-        results = []
-        for si_quan in trang_hien_tai:
-            results.append({
-                "HoTen": si_quan.HoTen,
-                "MaQuanNhan": si_quan.MaQuanNhan,
-                "TenDonVi": si_quan.DonVi.TenDonVi, 
-                "TenCapBac": si_quan.CapBac.TenCapBac
-            })
+#         # Tạo danh sách các kết quả
+#         results = []
+#         for si_quan in trang_hien_tai:
+#             results.append({
+#                 "HoTen": si_quan.HoTen,
+#                 "MaQuanNhan": si_quan.MaQuanNhan,
+#                 "TenDonVi": si_quan.DonVi.TenDonVi, 
+#                 "TenCapBac": si_quan.CapBac.TenCapBac
+#             })
 
-        return {
-            "status": "success",
-            "data": results,
-            "total_pages": paginator.num_pages,
-            "current_page": trang_hien_tai.number,
-            "has_next": trang_hien_tai.has_next(),
-            "has_previous": trang_hien_tai.has_previous()
-        }
-    except Exception as e:
-        # Trả về thông báo lỗi nếu có lỗi xảy ra
-        return {"status": "error", "message": str(e)}
+#         return {
+#             "status": "success",
+#             "data": results,
+#             "total_pages": paginator.num_pages,
+#             "current_page": trang_hien_tai.number,
+#             "has_next": trang_hien_tai.has_next(),
+#             "has_previous": trang_hien_tai.has_previous()
+#         }
+#     except Exception as e:
+#         # Trả về thông báo lỗi nếu có lỗi xảy ra
+#         return {"status": "error", "message": str(e)}
     
 
 def XemLichSuChucVu(id):
@@ -311,8 +311,8 @@ def ThongTinChiTiet(id):
 
         return {"status": "success", "data": data}
 
-    except SiQuanModel.SiQuanModel.DoesNotExist:
-        return {"status": "error", "message": "Không tìm thấy sĩ quan với ID đã cho."}
+    except QNCNModel.QNCNModel.DoesNotExist:
+        return {"status": "error", "message": "Không tìm thấy QNCN với ID đã cho."}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -321,14 +321,11 @@ def LayQNCNTuMa(MaQNCN):
     try:
         si_quan = QNCNModel.QNCNModel.objects.get(MaQuanNhan=MaQNCN,TrangThai=True)
         return si_quan
-    except SiQuanModel.SiQuanModel.DoesNotExist:
-        print(f"Không tìm thấy mã quân nhân: {MaQNCN}")
+    except QNCNModel.QNCNModel.DoesNotExist:
         return None
-    except SiQuanModel.SiQuanModel.MultipleObjectsReturned:
-        print(f"Nhiều quân nhân có cùng mã: {MaQNCN}")
+    except QNCNModel.QNCNModel.MultipleObjectsReturned:
         return None
     except Exception as e:
-        print(f"Lỗi khác: {str(e)}")
         return None
     
 

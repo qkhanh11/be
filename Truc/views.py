@@ -15,6 +15,7 @@ def ThemTrucBan(request):
     if result["status"] == "success":
         return Response(data=result,status=status.HTTP_200_OK)
     else:
+        print(result)
         return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
     
 

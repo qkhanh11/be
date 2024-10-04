@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 
 
 def RaVaoSQ(sothe,trangthai,cong, ngay, gio):
+    print(sothe,trangthai,cong, ngay, gio)
     try:
         tg_ra_va_tg_vao = ThoiGianTrongNgay_NhomSQ(ngay,sothe)
         try:
@@ -27,7 +28,7 @@ def RaVaoSQ(sothe,trangthai,cong, ngay, gio):
                 tg_ra_datetime = datetime.combine(datetime.strptime(ngay, "%Y-%m-%d"), tg_ra)
             
                 if thoigian_gio > tg_vao_datetime and thoigian_gio < tg_ra_datetime:
-                    if trangthai == 0:
+                    if trangthai == 0 or trangthai == "0":
                         
                         return {"status": "success1", "message": "Vào muộn"}
                     else:
@@ -205,7 +206,14 @@ def ChiTiet(id):
     
 
 def ThemBanGhi( sothe, trangthai,cong, ngay, gio):
+    print(sothe,trangthai,cong, ngay, gio)
     try:
+        tg_ra_va_tg_vao = ThoiGianTrongNgay_NhomSQ(ngay,sothe)
+        try:
+            if tg_ra_va_tg_vao['status'] == 'error':
+                return tg_ra_va_tg_vao  # Trả về thông báo lỗi nếu không tìm thấy nhóm sĩ quan
+        except: 
+            pass
         ngay_gio_str = ngay + " " + gio
         ngay_gio = datetime.strptime(ngay_gio_str, "%Y-%m-%d %H:%M")
         the = TheSiQuanModel.TheSiQuanModel.objects.get(SoThe=sothe, TrangThai= True)

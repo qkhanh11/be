@@ -10,6 +10,7 @@ urlpatterns = [
     path('SuaViPhamSQ/<int:id>',views.SuaViPhamSQ,name="LSRaVaSuaViPhamSQoSQ"),
     path('XoaViPhamSQ/<int:id>',views.XoaViPhamSQ,name="XoaViPhamSQ"),
     path('ChiTietViPhamSQ/<int:id>',views.ChiTietViPhamSQ,name="ChiTietViPhamSQ"),
+    path('ViPhamSQ/<int:id>',views.ViPhamSQ,name="ViPhamSQ"),
     # path('SuaRaVaoSQ/<int:id>',views.SuaRaVaoSQ,name="SuaRaVaoSQ"),
     # path('ThemBanGhi/',views.ThemBanGhi,name="ThemBanGhi"),
     # path('KTTheSQ/<int:id>',views.KTTheSQ,name="KTTheSQ"),

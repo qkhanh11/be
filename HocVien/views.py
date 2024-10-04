@@ -94,3 +94,13 @@ def ChiTietHocVien(request,id):
         return Response(result, status=status.HTTP_200_OK)
     else:
         return Response(result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['GET'])
+def LayTenHVTuMa(request):
+    mahv = request.GET.get('mahv')
+    result = NVHocVien.LayTenHVTuMa(mahv)
+    if result["status"] == "success":
+        return Response(result, status=status.HTTP_200_OK)
+    else:
+        return Response(result, status=status.HTTP_400_BAD_REQUEST)

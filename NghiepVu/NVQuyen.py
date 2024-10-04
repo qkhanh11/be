@@ -1,5 +1,5 @@
-from model import QuyenModel,ThoiGianQuyenModel,NhomSQModel,QuyenNhomSQModel, NhomQNCNModel,QuyenNhomQNCNModel
-from .NVTheRaVao import The_NhomSQ, The_NhomQNCN
+from model import QuyenModel,ThoiGianQuyenModel,NhomSQModel,QuyenNhomSQModel, NhomQNCNModel,QuyenNhomQNCNModel, QuyenNhomVCModel, NhomVCQPModel
+from .NVTheRaVao import The_NhomSQ, The_NhomQNCN, The_NhomVC
 from datetime import date
 from django.db.models import Min, Max
 from datetime import datetime
@@ -189,7 +189,6 @@ def ChiTietThoiGianQuyen(id):
 
 def ThoiGianTrongNgay_NhomSQ(ngay,sothe):
     try:
-        print(ngay)
         # Lấy nhóm sĩ quan dựa trên số thẻ
         nhom_sq_response = The_NhomSQ(sothe)
         try:
@@ -198,29 +197,27 @@ def ThoiGianTrongNgay_NhomSQ(ngay,sothe):
         except: pass
 
         nhom_sq = NhomSQModel.NhomSQModel.objects.get(pk=nhom_sq_response)  # Lấy đối tượng NhomSQ
-        quyen_nhom_sq = QuyenNhomSQModel.QuyenNhomSQModel.objects.filter(NhomSQ=nhom_sq).first()
-        if not quyen_nhom_sq:
+        quyen_nhom_qncn_list = QuyenNhomSQModel.QuyenNhomSQModel.objects.filter(NhomSQ=nhom_sq)
+        if not quyen_nhom_qncn_list.exists():
             return {"status": "error", "message": "Không tìm thấy quyền cho nhóm sĩ quan này."}
 
-        quyen = quyen_nhom_sq.Quyen  # Giả sử QuyenNhomSQModel có một trường ForeignKey hoặc OneToOneField tên là 'Quyen'
-        # print(quyen.TenQuyen)
         ngay = datetime.strptime(ngay, "%Y-%m-%d")
 
-# Lấy thứ bằng phương thức strftime
+        # Lấy thứ bằng phương thức strftime
         today = ngay.weekday()
-        print(today)
-        # today = date.today()
-        # Lọc các bản ghi của ngày hôm nay và nhóm sĩ quan cụ thể
-    
-        cac_ban_ghi_hom_nay = ThoiGianQuyenModel.ThoiGianQuyenModel.objects.filter(
-            Quyen=quyen,
-            Thu=today
-        )
-        for i in cac_ban_ghi_hom_nay:
-            print(i.id)
-        # Tìm thời gian ra sớm nhất và thời gian vào muộn nhất
-        tg_ra_va_tg_vao = cac_ban_ghi_hom_nay.values_list('TGRa', 'TGVao')
-        print(tg_ra_va_tg_vao)
+
+        tg_ra_va_tg_vao = []
+        # Duyệt qua tất cả các quyền của nhóm quân nhân chuyên nghiệp
+        for quyen_nhom_qncn in quyen_nhom_qncn_list:
+            quyen = quyen_nhom_qncn.Quyen
+            # Lọc các bản ghi của ngày hôm nay và quyền cụ thể
+            cac_ban_ghi_hom_nay = ThoiGianQuyenModel.ThoiGianQuyenModel.objects.filter(
+                Quyen=quyen,
+                Thu=today
+            )
+            # Thêm thời gian ra và vào của các bản ghi vào danh sách
+            tg_ra_va_tg_vao.extend(cac_ban_ghi_hom_nay.values_list('TGRa', 'TGVao'))
+
         return tg_ra_va_tg_vao
 
     except Exception as e:
@@ -228,7 +225,7 @@ def ThoiGianTrongNgay_NhomSQ(ngay,sothe):
         return {"status": "error", "message": str(e)}
 
 
-def ThoiGianTrongNgay_NhomQNCN(sothe):
+def ThoiGianTrongNgay_NhomQNCN(ngay, sothe):
     try:
 
         # Lấy nhóm sĩ quan dựa trên số thẻ
@@ -239,25 +236,369 @@ def ThoiGianTrongNgay_NhomQNCN(sothe):
         except: pass
 
         nhom_qncn = NhomQNCNModel.NhomQNCNModel.objects.get(pk=nhom_qncn_response)  # Lấy đối tượng NhomSQ
-        quyen_nhom_qncn = QuyenNhomQNCNModel.QuyenNhomQNCNModel.objects.filter(NhomQNCN=nhom_qncn).first()
-        if not quyen_nhom_qncn:
+        quyen_nhom_qncn_list = QuyenNhomQNCNModel.QuyenNhomQNCNModel.objects.filter(NhomQNCN=nhom_qncn)
+        if not quyen_nhom_qncn_list.exists():
             return {"status": "error", "message": "Không tìm thấy quyền cho nhóm quân nhân chuyên nghiệp này."}
 
-        quyen = quyen_nhom_qncn.Quyen  # Giả sử QuyenNhomSQModel có một trường ForeignKey hoặc OneToOneField tên là 'Quyen'
-        print(quyen.TenQuyen)
-        today = date.today()
-        # Lọc các bản ghi của ngày hôm nay và nhóm sĩ quan cụ thể
-    
-        cac_ban_ghi_hom_nay = ThoiGianQuyenModel.ThoiGianQuyenModel.objects.filter(
-            Quyen=quyen,
-            Thu=today.weekday()
-        )
-        for i in cac_ban_ghi_hom_nay:
-            print(i.id)
-        # Tìm thời gian ra sớm nhất và thời gian vào muộn nhất
-        tg_ra_va_tg_vao = cac_ban_ghi_hom_nay.values_list('TGRa', 'TGVao')
-        print(tg_ra_va_tg_vao)
+        ngay = datetime.strptime(ngay, "%Y-%m-%d")
+
+        # Lấy thứ bằng phương thức strftime
+        today = ngay.weekday()
+
+        tg_ra_va_tg_vao = []
+        # Duyệt qua tất cả các quyền của nhóm quân nhân chuyên nghiệp
+        for quyen_nhom_qncn in quyen_nhom_qncn_list:
+            quyen = quyen_nhom_qncn.Quyen
+            # Lọc các bản ghi của ngày hôm nay và quyền cụ thể
+            cac_ban_ghi_hom_nay = ThoiGianQuyenModel.ThoiGianQuyenModel.objects.filter(
+                Quyen=quyen,
+                Thu=today
+            )
+            # Thêm thời gian ra và vào của các bản ghi vào danh sách
+            tg_ra_va_tg_vao.extend(cac_ban_ghi_hom_nay.values_list('TGRa', 'TGVao'))
+
         return tg_ra_va_tg_vao
 
     except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
+
+
+def ThoiGianTrongNgay_NhomVC(ngay, sothe):
+    try:
+        # Lấy nhóm sĩ quan dựa trên số thẻ
+        nhom_qncn_response = The_NhomVC(sothe)
+        try:
+            if nhom_qncn_response['status'] == 'error':
+                return nhom_qncn_response  # Trả về thông báo lỗi nếu không tìm thấy nhóm sĩ quan
+        except:
+            pass
+
+        nhom_qncn = NhomVCQPModel.NhomVCQPModel.objects.get(pk=nhom_qncn_response)
+        
+        # Lấy tất cả các quyền liên quan đến nhóm quân nhân chuyên nghiệp
+        quyen_nhom_qncn_list = QuyenNhomVCModel.QuyenNhomVCModel.objects.filter(NhomVC=nhom_qncn)
+
+        if not quyen_nhom_qncn_list.exists():
+            return {"status": "error", "message": "Không tìm thấy quyền cho nhóm viên chức này."}
+
+        ngay = datetime.strptime(ngay, "%Y-%m-%d")
+
+        # Lấy thứ bằng phương thức strftime
+        today = ngay.weekday()
+
+        tg_ra_va_tg_vao = []
+        # Duyệt qua tất cả các quyền của nhóm quân nhân chuyên nghiệp
+        for quyen_nhom_qncn in quyen_nhom_qncn_list:
+            quyen = quyen_nhom_qncn.Quyen
+            # Lọc các bản ghi của ngày hôm nay và quyền cụ thể
+            cac_ban_ghi_hom_nay = ThoiGianQuyenModel.ThoiGianQuyenModel.objects.filter(
+                Quyen=quyen,
+                Thu=today
+            )
+            # Thêm thời gian ra và vào của các bản ghi vào danh sách
+            tg_ra_va_tg_vao.extend(cac_ban_ghi_hom_nay.values_list('TGRa', 'TGVao'))
+
+        return tg_ra_va_tg_vao
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
+
+def QuyenNhomSQ(id):
+    try:
+        # Lấy danh sách các quyền của NhomSQ dựa trên id
+        nhom_sq = NhomSQModel.NhomSQModel.objects.get( id=id)
+        quyen_nhom_sq_queryset = QuyenNhomSQModel.QuyenNhomSQModel.objects.filter(NhomSQ=nhom_sq)
+
+        # Tạo danh sách kết quả
+        quyen_list = []
+        for quyen_nhom_sq in quyen_nhom_sq_queryset:
+            quyen_list.append({
+                "id": quyen_nhom_sq.id,
+                "id_quyen":quyen_nhom_sq.Quyen.id,
+                "TenQuyen": quyen_nhom_sq.Quyen.TenQuyen,
+                "GiaiThich": quyen_nhom_sq.Quyen.GiaiThich,
+                "id_nhomsq":quyen_nhom_sq.NhomSQ.id
+            })
+
+        # Trả về kết quả
+        return {
+            "status": "success",
+            "data": quyen_list
+        }
+    except Exception as e:
+        # Trả về thông báo lỗi nếu có lỗi xảy ra
+        return {"status": "error", "message": str(e)}
+    
+
+def ThemQuyenNhomSQ(id_nhomsq,id_quyen):
+    try:
+        # Lấy đối tượng NhomSQ và Quyen dựa trên id
+        nhom_sq = NhomSQModel.NhomSQModel.objects.get(pk=id_nhomsq)
+        quyen = QuyenModel.QuyenModel.objects.get(pk=id_quyen)
+
+        # Kiểm tra xem quyền đã được thêm vào nhóm sĩ quan chưa
+        if QuyenNhomSQModel.QuyenNhomSQModel.objects.filter(NhomSQ=nhom_sq, Quyen=quyen).exists():
+            return {
+                "status": "error",
+                "message": "Quyền này đã tồn tại trong nhóm sĩ quan"
+            }
+
+        # Tạo đối tượng QuyenNhomSQ mới
+        quyen_nhom_sq = QuyenNhomSQModel.QuyenNhomSQModel(NhomSQ=nhom_sq, Quyen=quyen)
+        quyen_nhom_sq.save()
+
+        return {
+            "status": "success",
+            "message": "Đã thêm quyền cho nhóm sĩ quan thành công"
+        }
+    except Exception as e:
+        # Trả về thông báo lỗi nếu có lỗi xảy ra
+        return {"status": "error", "message": str(e)}
+    
+
+def SuaQuyenNhomSQ(id,id_quyen):
+    try:
+        # Lấy đối tượng NhomSQ và Quyen dựa trên id
+        quyen_nhom = QuyenNhomSQModel.QuyenNhomSQModel.objects.get(pk=id)
+        quyen = QuyenModel.QuyenModel.objects.get(pk=id_quyen)
+        # Kiểm tra xem quyền đã được thêm vào nhóm sĩ quan chưa
+        if QuyenNhomSQModel.QuyenNhomSQModel.objects.filter(NhomSQ=quyen_nhom.NhomSQ, Quyen=quyen).exists():
+            return {
+                "status": "error",
+                "message": "Quyền này đã tồn tại trong nhóm sĩ quan."
+            }
+
+        # Cập nhật quyền cho nhóm sĩ quan
+        quyen_nhom.Quyen = quyen
+        quyen_nhom.save()
+
+        return {
+            "status": "success",
+            "message": "Đã cập nhật quyền cho nhóm sĩ quan thành công"
+        }
+    except Exception as e:
+        # Xử lý các lỗi khác
+        return {"status": "error", "message": str(e)}
+    
+
+def XoaQuyenNhomSQ(id):
+    try:
+        # Lấy đối tượng NhomSQ và Quyen dựa trên id
+        quyen_nhom = QuyenNhomSQModel.QuyenNhomSQModel.objects.get(pk=id)
+
+        
+        quyen_nhom.delete()
+
+        return {
+            "status": "success",
+            "message": "Xóa quyền cho nhóm sĩ quan thành công"
+        }
+    except Exception as e:
+        # Xử lý các lỗi khác
+        print(str(e))
+        return {"status": "error", "message": str(e)}
+    
+
+
+##### quyền nhóm qncn
+def QuyenNhomQNCN(id):
+    try:
+        # Lấy danh sách các quyền của NhomSQ dựa trên id
+        nhom_sq = NhomQNCNModel.NhomQNCNModel.objects.get( id=id)
+        quyen_nhom_sq_queryset = QuyenNhomQNCNModel.QuyenNhomQNCNModel.objects.filter(NhomQNCN=nhom_sq)
+
+        # Tạo danh sách kết quả
+        quyen_list = []
+        for quyen_nhom_sq in quyen_nhom_sq_queryset:
+            quyen_list.append({
+                "id": quyen_nhom_sq.id,
+                "id_quyen":quyen_nhom_sq.Quyen.id,
+                "TenQuyen": quyen_nhom_sq.Quyen.TenQuyen,
+                "GiaiThich": quyen_nhom_sq.Quyen.GiaiThich,
+                "id_nhomQNCN":quyen_nhom_sq.NhomQNCN.id
+            })
+
+        # Trả về kết quả
+        return {
+            "status": "success",
+            "data": quyen_list
+        }
+    except Exception as e:
+        # Trả về thông báo lỗi nếu có lỗi xảy ra
+        return {"status": "error", "message": str(e)}
+    
+
+def ThemQuyenNhomQNCN(id_nhomQNCN,id_quyen):
+    try:
+        # Lấy đối tượng NhomSQ và Quyen dựa trên id
+        nhom_sq = NhomQNCNModel.NhomQNCNModel.objects.get(pk=id_nhomQNCN)
+        quyen = QuyenModel.QuyenModel.objects.get(pk=id_quyen)
+
+        # Kiểm tra xem quyền đã được thêm vào nhóm sĩ quan chưa
+        if QuyenNhomQNCNModel.QuyenNhomQNCNModel.objects.filter(NhomQNCN=nhom_sq, Quyen=quyen).exists():
+            return {
+                "status": "error",
+                "message": "Quyền này đã tồn tại trong nhóm QNCN"
+            }
+
+        # Tạo đối tượng QuyenNhomSQ mới
+        quyen_nhom_sq = QuyenNhomSQModel.QuyenNhomSQModel(NhomQNCN=nhom_sq, Quyen=quyen)
+        quyen_nhom_sq.save()
+
+        return {
+            "status": "success",
+            "message": "Đã thêm quyền cho nhóm QNCN thành công"
+        }
+    except Exception as e:
+        # Trả về thông báo lỗi nếu có lỗi xảy ra
+        return {"status": "error", "message": str(e)}
+    
+
+def SuaQuyenNhomQNCN(id,id_quyen):
+    try:
+        # Lấy đối tượng NhomSQ và Quyen dựa trên id
+        quyen_nhom = QuyenNhomQNCNModel.QuyenNhomQNCNModel.objects.get(pk=id)
+        quyen = QuyenModel.QuyenModel.objects.get(pk=id_quyen)
+        # Kiểm tra xem quyền đã được thêm vào nhóm sĩ quan chưa
+        if QuyenNhomSQModel.QuyenNhomSQModel.objects.filter(NhomSQ=quyen_nhom.NhomQNCN, Quyen=quyen).exists():
+            return {
+                "status": "error",
+                "message": "Quyền này đã tồn tại trong nhóm QNCN."
+            }
+
+        # Cập nhật quyền cho nhóm sĩ quan
+        quyen_nhom.Quyen = quyen
+        quyen_nhom.save()
+
+        return {
+            "status": "success",
+            "message": "Đã cập nhật quyền cho nhóm QNCN thành công"
+        }
+    except Exception as e:
+        # Xử lý các lỗi khác
+        print(str(e))
+        return {"status": "error", "message": str(e)}
+    
+
+def XoaQuyenNhomQNCN(id):
+    try:
+        # Lấy đối tượng NhomSQ và Quyen dựa trên id
+        quyen_nhom = QuyenNhomQNCNModel.QuyenNhomQNCNModel.objects.get(pk=id)
+
+        
+        quyen_nhom.delete()
+
+        return {
+            "status": "success",
+            "message": "Xóa quyền cho nhóm QNCN thành công"
+        }
+    except Exception as e:
+        # Xử lý các lỗi khác
+        print(str(e))
+        return {"status": "error", "message": str(e)}
+
+
+
+###Quyền nhóm vc
+
+
+def QuyenNhomVC(id):
+    try:
+        # Lấy danh sách các quyền của NhomSQ dựa trên id
+        nhom_sq = NhomVCQPModel.NhomVCQPModel.objects.get( id=id)
+        quyen_nhom_sq_queryset = QuyenNhomVCModel.QuyenNhomVCModel.objects.filter(NhomVC=nhom_sq)
+
+        # Tạo danh sách kết quả
+        quyen_list = []
+        for quyen_nhom_sq in quyen_nhom_sq_queryset:
+            print()
+            quyen_list.append({
+                "id": quyen_nhom_sq.id,
+                "id_quyen":quyen_nhom_sq.Quyen.id,
+                "TenQuyen": quyen_nhom_sq.Quyen.TenQuyen,
+                "GiaiThich": quyen_nhom_sq.Quyen.GiaiThich,
+                "id_nhomVC":quyen_nhom_sq.NhomVC.id
+            })
+
+        # Trả về kết quả
+        return {
+            "status": "success",
+            "data": quyen_list
+        }
+    except Exception as e:
+        # Trả về thông báo lỗi nếu có lỗi xảy ra
+        return {"status": "error", "message": str(e)}
+    
+
+def ThemQuyenNhomVC(id_nhomVC,id_quyen):
+    try:
+        # Lấy đối tượng NhomSQ và Quyen dựa trên id
+        nhom_sq = NhomVCQPModel.NhomVCQPModel.objects.get(pk=id_nhomVC)
+        quyen = QuyenModel.QuyenModel.objects.get(pk=id_quyen)
+
+        # Kiểm tra xem quyền đã được thêm vào nhóm sĩ quan chưa
+        if QuyenNhomVCModel.QuyenNhomVCModel.objects.filter(NhomVC=nhom_sq, Quyen=quyen).exists():
+            return {
+                "status": "error",
+                "message": "Quyền này đã tồn tại trong nhóm viên chức"
+            }
+
+        # Tạo đối tượng QuyenNhomSQ mới
+        quyen_nhom_sq = QuyenNhomVCModel.QuyenNhomVCModel(NhomVC=nhom_sq, Quyen=quyen)
+        quyen_nhom_sq.save()
+
+        return {
+            "status": "success",
+            "message": "Đã thêm quyền cho nhóm viên chức thành công"
+        }
+    except Exception as e:
+        # Trả về thông báo lỗi nếu có lỗi xảy ra
+        return {"status": "error", "message": str(e)}
+    
+
+def SuaQuyenNhomVC(id,id_quyen):
+    print(id_quyen)
+    try:
+        # Lấy đối tượng NhomSQ và Quyen dựa trên id
+        quyen_nhom = QuyenNhomVCModel.QuyenNhomVCModel.objects.get(pk=id)
+        quyen = QuyenModel.QuyenModel.objects.get(pk=id_quyen)
+        print(id_quyen)
+        # Kiểm tra xem quyền đã được thêm vào nhóm sĩ quan chưa
+        if QuyenNhomVCModel.QuyenNhomVCModel.objects.filter(NhomSQ=quyen_nhom.NhomVC, Quyen=quyen).exists():
+            return {
+                "status": "error",
+                "message": "Quyền này đã tồn tại trong nhóm viên chức."
+            }
+
+        # Cập nhật quyền cho nhóm sĩ quan
+        quyen_nhom.Quyen = quyen
+        quyen_nhom.save()
+
+        return {
+            "status": "success",
+            "message": "Đã cập nhật quyền cho nhóm viên chức thành công"
+        }
+    except Exception as e:
+        # Xử lý các lỗi khác
+        print(str(e))
+        return {"status": "error", "message": str(e)}
+    
+
+def XoaQuyenNhomVC(id):
+    try:
+        # Lấy đối tượng NhomSQ và Quyen dựa trên id
+        quyen_nhom = QuyenNhomVCModel.QuyenNhomVCModel.objects.get(pk=id)
+
+        
+        quyen_nhom.delete()
+
+        return {
+            "status": "success",
+            "message": "Xóa quyền cho nhóm viên chức thành công"
+        }
+    except Exception as e:
+        # Xử lý các lỗi khác
+        print(str(e))
         return {"status": "error", "message": str(e)}

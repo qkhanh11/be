@@ -205,3 +205,14 @@ def ChiTietHocVien(id):
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
+    
+
+
+def LayTenHVTuMa(mahv):
+    try:
+        CS = HocVienModel.HocVienModel.objects.get(MaQuanNhan=mahv,TinhTrang=True)
+        return {"status": "success", "HoTen": CS.HoTen}
+    # except Exception as e:
+    #     return {"status": "error", "message": str(e)}
+    except:
+        return {"status": "success", "HoTen": ""}

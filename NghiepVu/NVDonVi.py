@@ -72,7 +72,8 @@ def XoaDonVi(id):
         DonVi = DonViModel.DonViModel.objects.get(pk=id)
         
         # Xóa đối tượng khỏi cơ sở dữ liệu
-        DonVi.delete()
+        DonVi.tinhtrang=False
+        DonVi.save()
 
         return {"status": "success", "message": "Xóa thành công."}
     
@@ -87,7 +88,7 @@ def TimDVCapTren(id_CapDonVi):
     CapTren = CapHienTai.CapTren
 
     # Tìm tất cả các đơn vị có cấp nhóm là CapTren
-    don_vi_list = DonViModel.DonViModel.objects.filter(id_CapDonVi=CapTren)
+    don_vi_list = DonViModel.DonViModel.objects.filter(id_CapDonVi=CapTren,tinhtrang=True)
 
     # Chuyển đổi dữ liệu thành danh sách các từ điển chứa id, tên, và mã đơn vị
     data = list(don_vi_list.values("id", "TenDonVi", "MaDonVi"))
@@ -98,9 +99,11 @@ def TimDonVi(TimKiem):
     try:
         # Tìm tất cả các đơn vị có tên hoặc mã đơn vị chứa từ khóa tìm kiếm
         don_vi_list = DonViModel.DonViModel.objects.filter(
-            TenDonVi__icontains=TimKiem
+            TenDonVi__icontains=TimKiem,
+            tinhtrang=True
         ) | DonViModel.DonViModel.objects.filter(
-            MaDonVi__icontains=TimKiem
+            MaDonVi__icontains=TimKiem,
+            tinhtrang=True
         )
 
         # Chuyển đổi dữ liệu thành danh sách các từ điển chứa id, tên, và mã đơn vị
@@ -115,7 +118,7 @@ def TimDonVi(TimKiem):
 def CacDonViCon(id):
     try:
         # Tìm tất cả các đơn vị có id_DonViCapTren là id của đơn vị cha
-        don_vi_con_list = DonViModel.DonViModel.objects.filter(id_DonViCapTren_id=id)
+        don_vi_con_list = DonViModel.DonViModel.objects.filter(id_DonViCapTren_id=id,tinhtrang=True)
 
         # Chuyển đổi dữ liệu thành danh sách các từ điển chứa id, tên, và mã đơn vị
         data = list(don_vi_con_list.values("id", "TenDonVi", "MaDonVi"))
@@ -175,7 +178,7 @@ def ThongTinDonVi(id):
 def DropDownDV(id_CapDonVi):
     try:
         # Lọc các đơn vị dựa trên id_CapDonVi
-        don_vi_list = DonViModel.DonViModel.objects.filter(id_CapDonVi__id=id_CapDonVi).values('id', 'TenDonVi', 'MaDonVi')
+        don_vi_list = DonViModel.DonViModel.objects.filter(id_CapDonVi__id=id_CapDonVi,tinhtrang=True).values('id', 'TenDonVi', 'MaDonVi')
         
         # Nếu không có đơn vị nào được tìm thấy
         
@@ -195,7 +198,7 @@ def DonViCon(id):
         don_vi_cha = DonViModel.DonViModel.objects.get(pk=id)
 
         # Lấy tất cả các đơn vị con liên quan
-        don_vi_con_list = don_vi_cha.don_vi_con.all()
+        don_vi_con_list = don_vi_cha.don_vi_con.filter(tinhtrang=True)
 
         # Tạo danh sách kết quả đơn vị con
         results = [{"id": dv.id, "TenDonVi": dv.TenDonVi, "MaDonVi": dv.MaDonVi} for dv in don_vi_con_list]
@@ -213,7 +216,7 @@ def DonViCon(id):
 def DonViChaTheoNhom(id):
     try:
         # Lọc tất cả các đối tượng CapDonViModel có CapTren là None và id_NhomDonVi là id
-        cap_nhom_don_vi = CapDonViModel.CapDonViModel.objects.filter(id_NhomDonVi=id, CapTren__isnull=True)
+        cap_nhom_don_vi = CapDonViModel.CapDonViModel.objects.filter(id_NhomDonVi=id, CapTren__isnull=True,tinhtrang=True)
 
         # Lọc tất cả các đối tượng DonViModel có CapNhomDonVi nằm trong danh sách cap_nhom_don_vi
         don_vi_list = DonViModel.DonViModel.objects.filter(id_CapDonVi__in=cap_nhom_don_vi)
@@ -231,7 +234,7 @@ def DonViChaTheoNhom(id):
 
 def TimDonVi(Nhom, TimKiem=None):
     # Lọc các đơn vị theo id_NhomDonVi của lớp CapDonViModel
-    don_vi_list = DonViModel.DonViModel.objects.filter(id_CapDonVi__id_NhomDonVi=Nhom)
+    don_vi_list = DonViModel.DonViModel.objects.filter(id_CapDonVi__id_NhomDonVi=Nhom,tinhtrang=True)
     
     # Nếu TimKiem không phải là None, thêm điều kiện lọc theo tên hoặc mã đơn vị
     if TimKiem:
@@ -256,7 +259,7 @@ def DropdownDonViCha(id_capdonvi):
         cap_don_vi_cha = cap_don_vi_con.CapTren
 
         # Tìm các đơn vị có cấp nhóm đơn vị bằng với cấp nhóm đơn vị cha
-        don_vi_cha = DonViModel.DonViModel.objects.filter(id_CapDonVi=cap_don_vi_cha).values('id', 'TenDonVi')
+        don_vi_cha = DonViModel.DonViModel.objects.filter(id_CapDonVi=cap_don_vi_cha,tinhtrang=True).values('id', 'TenDonVi')
 
         # Trả về danh sách id và tên của các đơn vị cha
         return {

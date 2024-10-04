@@ -147,7 +147,8 @@ def ChiTietChienSi(id):
             "SoCanCuoc": chien_si.SoCanCuoc,
             "QueQuan": chien_si.QueQuan,
             "NoiO": chien_si.NoiO,
-            "IDDonVi": chien_si.DonVi.id
+            "IDDonVi": chien_si.DonVi.id,
+            "IDCapBac": chien_si.CapBac.id
 
         }
 

@@ -9,6 +9,7 @@ class DonViModel(models.Model):
     id_DonViCapTren = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='don_vi_con')
     SoDienThoai = models.CharField(max_length=15)
     id_CapDonVi = models.ForeignKey(CapDonViModel, on_delete=models.CASCADE)
+    tinhtrang = models.BooleanField(default=True)
 
     def __str__(self):
         return self.TenDonVi

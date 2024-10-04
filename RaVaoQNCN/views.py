@@ -8,7 +8,7 @@ from rest_framework import status
 from NghiepVu import NVRaVaoQNCN
 
 @api_view(['POST'])
-def RaVaoSQ(request):
+def RaVaoQNCN(request):
     sothe = request.data.get('sothe')
     trangthai = request.data.get('trangthai')
     cong = request.data.get('cong')
@@ -23,7 +23,7 @@ def RaVaoSQ(request):
 
 
 @api_view(['POST'])
-def RaVaoSQDacBiet(request):
+def RaVaoQNCNDacBiet(request):
     sothe = request.data.get('sothe')
     trangthai = request.data.get('trangthai')
     cong = request.data.get('cong')
@@ -46,7 +46,7 @@ def lay_lich_su_ra_vao(request):
     
 
 @api_view(['GET'])
-def LSRaVaoSQ(request,id):
+def LSRaVaoQNCN(request,id):
     NgayBD = request.GET.get("NgayBD")
     NgayKT = request.GET.get("NgayKT")
     result = NVRaVaoQNCN.LSRaVaoQNCN(id,NgayBD,NgayKT)
@@ -66,14 +66,14 @@ def ChiTiet(request,id):
     
 
 @api_view(['PUT'])
-def SuaRaVaoSQ(request,id):
+def SuaRaVaoQNCN(request,id):
     sothe = request.data.get('sothe')
     trangthai = request.data.get('trangthai')
     cong = request.data.get('cong')
     ngay = request.data.get('ngay')
     gio = request.data.get('gio')
     print(id, sothe, trangthai,cong, ngay, gio)
-    result = NVRaVaoSQ.SuaRaVaoSQ(id, sothe, trangthai,cong, ngay, gio)
+    result = NVRaVaoQNCN.SuaRaVaoQNCN(id, sothe, trangthai,cong, ngay, gio)
     if result["status"] == "success":
         return Response(data=result,status=status.HTTP_200_OK)
     else:
@@ -82,8 +82,8 @@ def SuaRaVaoSQ(request,id):
     
 
 @api_view(['DELETE'])
-def XoaRaVaoSQ(request,id):
-    result = NVRaVaoSQ.XoaRaVaoSQ(id)
+def XoaRaVaoQNCN(request,id):
+    result = NVRaVaoQNCN.XoaRaVaoQNCN(id)
     if result["status"] == "success":
         return Response(data=result,status=status.HTTP_200_OK)
     else:
@@ -98,7 +98,7 @@ def ThemBanGhi(request):
     cong = request.data.get('cong')
     ngay = request.data.get('ngay')
     gio = request.data.get('gio')
-    result = NVRaVaoSQ.ThemBanGhi( sothe, trangthai,cong, ngay, gio)
+    result = NVRaVaoQNCN.ThemBanGhi( sothe, trangthai,cong, ngay, gio)
     if result["status"] == "success":
         return Response(data=result,status=status.HTTP_200_OK)
     else:

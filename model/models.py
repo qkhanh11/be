@@ -1,6 +1,3 @@
-from django.db import models
-
-# Create your models here.
 from .CaGacVBModel import CaGacVBModel
 from .CapBacModel import CapBacModel
 from .CapDonViModel import CapDonViModel
@@ -60,3 +57,4 @@ from .LoaiKhachModel import LoaiKhachModel
 from .CongGacModel import CongGacModel
 from .KhachHocVienModel import KhachHocVienModel
 from .PCGacNgayModel import PCGacNgayModel
+from . import NewUserModel

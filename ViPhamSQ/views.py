@@ -61,6 +61,17 @@ def TatCaViPhamSQ(request):
         return Response(data=result,status=status.HTTP_200_OK)
     else:
         return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['GET'])
+def ViPhamSQ(request,id):
+    NgayBD = request.GET.get("NgayBD")
+    NgayKT = request.GET.get("NgayKT")
+    result = NVViPham.ViPhamSQ(id,NgayBD,NgayKT)
+    if result["status"] == "success" or result["status"] == "success1":
+        return Response(data=result,status=status.HTTP_200_OK)
+    else:
+        return Response(data=result, status=status.HTTP_400_BAD_REQUEST)
 
     
 

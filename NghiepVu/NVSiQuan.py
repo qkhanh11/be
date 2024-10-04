@@ -171,6 +171,7 @@ def TimSiQuan(TimKiem, TenDV, trang=1):
     try:
         # Xử lý tìm kiếm theo tên, mã quân nhân, và tên đơn vị
         si_quan_queryset = SiQuanModel.SiQuanModel.objects.filter(TrangThai=True)
+        print(len(si_quan_queryset))
 
         # Tìm kiếm theo tên đơn vị nếu có
         if TenDV:

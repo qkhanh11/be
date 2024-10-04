@@ -56,8 +56,20 @@ INSTALLED_APPS = [
     'ViPham',
     'Quyen',
     'QNCN',
-    'ViPhamSQ'
+    'ViPhamSQ',
+    'RaVaoQNCN',
+    'RaVaoVC',
+    'VCQP',
+    'KhachHV',
+    'ViPhamQNCN',
+    'ViPhamVC',
+    'ViPhamHV',
+
 ]
+
+
+AUTH_USER_MODEL = 'model.User'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -100,7 +112,7 @@ WSGI_APPLICATION = 'be.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'qlravao',
+        'NAME': 'qlravao4',
         'USER': 'root',
         'PASSWORD': '03062001Khanh1',
         'HOST': 'localhost',
